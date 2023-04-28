@@ -1,0 +1,25 @@
+{
+  "name": "@lxdgc9/micro-pkg",
+  "license": "MIT",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lxdgc9/micro.git"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "node-nats-streaming": "^0.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.2",
+    "typescript": "^5.0.4"
+  }
+}

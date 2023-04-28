@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro-sys-db-role
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db-role
+  template:
+    metadata:
+      labels:
+        app: db-role
+    spec:
+      containers:
+        - name: db-role
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-role
+spec:
+  type: NodePort
+  selector:
+    app: db-role
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

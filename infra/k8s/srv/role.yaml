@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: micro-sys-srv-role
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: role
+  template:
+    metadata:
+      labels:
+        app: role
+    spec:
+      containers:
+        - name: srv-role
+          image: micro-system/role
+          env:
+            - name: MONGO_URI
+              value: "mongodb://db-role:27017/user"
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://ebus-nats:4222"
+            - name: NATS_CLUSTER_ID
+              value: microservices
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: role
+spec:
+  type: NodePort
+  selector:
+    app: role
+  ports:
+    - name: role
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
