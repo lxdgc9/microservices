@@ -1,0 +1,23 @@
+GET http://localhost:3000/api/users/roles/perms/group
+
+###
+
+POST http://localhost:3000/api/users/roles/perms/group
+Content-Type: application/json
+
+{
+  "name": "chung"
+}
+
+###
+
+PATCH http://localhost:3000/api/users/roles/perms/group/64537390db4ec84b6b8023c4
+Content-Type: application/json
+
+{
+  "name": "jksadjaksl"
+}
+
+###
+
+DELETE http://localhost:3000/api/users/roles/perms/group/64537390db4ec84b6b8023c4

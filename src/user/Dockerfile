@@ -2,11 +2,11 @@ FROM node:alpine
 
 WORKDIR /usr/app
 
-COPY package.json yarn.lock .npmrc .
+COPY package.json yarn.lock ./
 
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc yarn
+RUN yarn
 
-COPY . .
+COPY . ./
 
 EXPOSE 3000
 

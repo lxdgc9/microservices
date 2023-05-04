@@ -1,11 +1,11 @@
 import { Schema, Types, model } from "mongoose";
 
-interface IPermGr {
+interface IRole {
   name: string;
   perms: Types.ObjectId[];
 }
 
-const schema = new Schema<IPermGr>(
+const schema = new Schema<IRole>(
   {
     name: {
       type: String,
@@ -19,7 +19,7 @@ const schema = new Schema<IPermGr>(
     ],
   },
   {
-    collection: "Permission Group",
+    timestamps: true,
     toJSON: {
       virtuals: true,
       transform(_doc, ret, _opts) {
@@ -30,6 +30,9 @@ const schema = new Schema<IPermGr>(
   }
 );
 
-schema.index({ perms: 1 });
+schema.index({
+  perms: 1,
+  createdAt: -1,
+});
 
-export const PermGr = model<IPermGr>("perm-gr", schema);
+export const Role = model<IRole>("role", schema, "Role");

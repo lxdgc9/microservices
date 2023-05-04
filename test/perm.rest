@@ -1,0 +1,12 @@
+GET http://localhost:3000/api/users/roles/perms
+
+###
+
+POST http://localhost:3000/api/users/roles/perms
+Content-Type: application/json
+
+{
+  "sign": "GET_PERM",
+  "desc": "Quyền xem danh sách permission",
+  "groupId": "64536928d1f2fb13f47f3dc2"
+}

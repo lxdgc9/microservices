@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - bridge
+  nats:
+    image: nats-streaming:0.17.0
+    command: [
+      "-p", 
+      "4222", 
+      "-m", 
+      "8222", 
+      "-hbi", 
+      "5s", 
+      "-hbt", 
+      "5s", 
+      "-hbf", 
+      "2", 
+      "-SD", 
+      "-cid", 
+      "course_ware"
+    ]
+    ports:
+      - 4222
+      - 8222
+    networks:
+      - bridge
+  user:
+    image: gdvn/course_ware-user
+    build: ./src/user
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URI=${MONGO_URI_USER_SRV}
+      - NATS_URL=http://nats:4222
+      - NATS_CLIENT_ID=user-srv
+      - NATS_CLUSTER_ID=course_ware
+    volumes:
+      - ./src/user:/usr/app:rw
+    networks:
+      - bridge
+    depends_on:
+      - nats
+
+networks:
+  bridge:

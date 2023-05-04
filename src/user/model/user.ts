@@ -13,8 +13,12 @@ const schema = new Schema<IUser>(
   {
     attrs: [
       {
-        k: String,
-        v: String,
+        k: {
+          type: String,
+        },
+        v: {
+          type: String,
+        },
       },
     ],
     role: {
@@ -28,10 +32,11 @@ const schema = new Schema<IUser>(
     },
   },
   {
+    collection: "User",
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform(ret) {
+      transform(_doc, ret, _opts) {
         delete ret._id;
         delete ret.__v;
       },
@@ -39,6 +44,9 @@ const schema = new Schema<IUser>(
   }
 );
 
-schema.index({ "attrs.k": 1, "attrs.v": 1 });
+schema.index({
+  "attrs.k": 1,
+  "attrs.v": 1,
+});
 
-export const User = model<IUser>("user", schema, "User");
+export const User = model<IUser>("user", schema);
