@@ -7,8 +7,14 @@ export const getUsers: RequestHandler = async (
   next
 ) => {
   try {
-    const users = await User.find().populate("role");
-    res.json({ users });
+    res.json({
+      users: await User.find()
+        .populate({
+          path: "role",
+          select: "-perms",
+        })
+        .sort({ createdAt: -1 }),
+    });
   } catch (e) {
     next(e);
   }

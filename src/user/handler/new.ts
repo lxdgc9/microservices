@@ -5,32 +5,38 @@ import { Role } from "../model/role";
 import { User } from "../model/user";
 
 type Dto = {
-  prof: Record<string, string>;
+  prof: object;
   password: string;
-  role: Types.ObjectId;
+  roleId: Types.ObjectId;
   active?: boolean;
 };
 
-export const newUser: RequestHandler = async (req, res, next) => {
-  const { prof, password, role, active }: Dto = req.body;
+export const newUser: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const { prof, password, roleId, active }: Dto = req.body;
 
   try {
-    if (await Role.findById(role)) {
-      throw new BadReqErr("invalid role");
+    if (await Role.findById(roleId)) {
+      throw new BadReqErr("role doesn't exist");
     }
 
-    const user = new User({
+    const newUser = new User({
       attrs: Object.entries(prof).map(([k, v]) => ({
         k,
         v,
       })),
       password,
-      role,
+      role: roleId,
       active,
     });
-    await user.save();
+    await newUser.save();
 
-    res.status(201).json({ user });
+    res
+      .status(201)
+      .json({ user: await User.findById(newUser._id) });
   } catch (e) {
     next(e);
   }
