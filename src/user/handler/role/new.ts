@@ -9,13 +9,19 @@ type Dto = {
   permIds: Types.ObjectId[];
 };
 
-export const newRole: RequestHandler = async (req, res, next) => {
+export const newRole: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const { name, permIds }: Dto = req.body;
 
   try {
-    const perms = await Perm.find({ _id: permIds });
+    const perms = await Perm.find({
+      _id: { $in: permIds },
+    });
     if (permIds.length < perms.length) {
-      throw new BadReqErr("invalid permIds");
+      throw new BadReqErr("permIds doesn't match");
     }
 
     const role = new Role({
@@ -24,8 +30,13 @@ export const newRole: RequestHandler = async (req, res, next) => {
     });
     await role.save();
 
-    res.send({ role });
-  } catch (err) {
-    next(err);
+    res.json({
+      role: await Role.findById(role._id).populate({
+        path: "perms",
+        select: "-group",
+      }),
+    });
+  } catch (e) {
+    next(e);
   }
 };

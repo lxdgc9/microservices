@@ -19,7 +19,7 @@ export const getPermById: RequestHandler = async (
     }
 
     res.json({ perm });
-  } catch (err) {
-    next(err);
+  } catch (e) {
+    next(e);
   }
 };

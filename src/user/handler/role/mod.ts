@@ -5,32 +5,46 @@ import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
 
 type Dto = {
-  name: string;
-  permIds: Types.ObjectId[];
+  name?: string;
+  permIds?: Types.ObjectId[];
 };
 
-export const modRole: RequestHandler = async (req, res, next) => {
+export const modRole: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const { name, permIds }: Dto = req.body;
   try {
-    const perms = await Perm.find({ _id: permIds });
-    if (permIds.length < perms.length) {
-      throw new BadReqErr("invalid permIds");
-    }
-
-    const role = await Role.findByIdAndUpdate(req.params.id, {
-      name,
-      perms: perms.map((p) => p._id),
-    });
+    const role = await Role.findById(req.params.id);
     if (!role) {
-      throw new BadReqErr("role does not exist");
+      throw new BadReqErr("role doesn't exist");
     }
 
-    const detail = await Role.findById(role._id).populate({
-      path: "perms",
-      select: "-group",
-    });
+    if (permIds) {
+      const perms = await Perm.find({
+        _id: { $in: permIds },
+      });
+      if (perms.length < permIds.length) {
+        throw new BadReqErr("permIds doesn't match");
+      }
+    }
 
-    res.send({ role: detail });
+    res.json({
+      role: await Role.findByIdAndUpdate(
+        role._id,
+        {
+          $set: {
+            name,
+            perms: permIds,
+          },
+        },
+        { new: true }
+      ).populate({
+        path: "perms",
+        select: "-group",
+      }),
+    });
   } catch (e) {
     next(e);
   }

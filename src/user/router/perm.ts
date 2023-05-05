@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { Types } from "mongoose";
-import { BadReqErr } from "../err";
 import { delPerm } from "../handler/role/perm/del";
 import { getPerms } from "../handler/role/perm/get";
 import { getPermById } from "../handler/role/perm/get-id";
@@ -33,11 +32,13 @@ r.patch(
       .optional({ values: "falsy" })
       .isArray()
       .custom((v) => {
-        const isValid = v.every((id: string) =>
-          Types.ObjectId.isValid(id)
-        );
-        if (!isValid) {
-          throw new BadReqErr("invalid ObjectId in array");
+        if (v) {
+          const isValid = v.every((id: string) =>
+            Types.ObjectId.isValid(id)
+          );
+          if (!isValid) {
+            throw new Error("invalid ObjectId in array");
+          }
         }
         return true;
       }),

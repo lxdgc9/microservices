@@ -2,14 +2,20 @@ import { RequestHandler } from "express";
 import { BadReqErr } from "../../err";
 import { Role } from "../../model/role";
 
-export const delRole: RequestHandler = async (req, res, next) => {
+export const delRole: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
-    const role = await Role.findByIdAndDelete(req.params.id);
+    const role = await Role.findByIdAndDelete(
+      req.params.id
+    );
     if (!role) {
-      throw new BadReqErr("role does not exist");
+      throw new BadReqErr("role doesn't exist");
     }
 
-    res.sendStatus(204);
+    res.json({ msg: "delete successfully" });
   } catch (e) {
     next(e);
   }
