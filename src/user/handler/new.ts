@@ -1,23 +1,40 @@
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { BadReqErr } from "../err";
+import { Role } from "../model/role";
+import { User } from "../model/user";
 
 type Dto = {
-  sign: object;
-  prof: object;
-  roleId: Types.ObjectId;
+  password: string;
+  prof: Record<string, string>;
+  role: Types.ObjectId;
   active?: boolean;
 };
 
-export const newUser: RequestHandler = (req, res, next) => {
-  const { sign, prof, roleId, active }: Dto = req.body;
+export const newUser: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const { password, prof, role, active }: Dto = req.body;
+
   try {
-    console.log({
-      sign,
-      prof,
-      roleId,
+    if (await Role.findById(role)) {
+      throw new BadReqErr("invalid role");
+    }
+
+    const user = new User({
+      attrs: Object.entries(prof).map(([k, v]) => ({
+        k,
+        v,
+      })),
+      password,
+      role,
       active,
     });
-    res.send({ msg: "hello world" });
+    await user.save();
+
+    res.status(201).json({ user });
   } catch (e) {
     next(e);
   }

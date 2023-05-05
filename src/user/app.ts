@@ -13,7 +13,7 @@ app.use("/api/users/roles", roleRouter);
 app.use("/api/users", userRouter);
 
 app.all("*", (_req, res) => {
-  res.sendStatus(404);
+  res.status(404).json({ msg: "not found" });
 });
 
 app.use(errHandler);

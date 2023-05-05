@@ -1,0 +1,23 @@
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "prof": {
+    "username": "username",
+    "phone": "032751859",
+    "email": "longdp@gdvietnam.com"
+  },
+  "password": "123456",
+  "role": "64536928d1f2fb13f47f3dc2"
+}
+
+###
+
+POST http://localhost:3000/api/users/auth
+Content-Type: application/json
+
+{
+  "type": "phone",
+  "sign": "0327515859",
+  "password": "123456"
+}

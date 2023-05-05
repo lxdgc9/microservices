@@ -9,8 +9,8 @@ export const errHandler: ErrorRequestHandler = (
 ) => {
   console.log(e);
   if (e instanceof HttpErr) {
-    return res.status(e.code).send({ msg: e.message });
+    return res.status(e.code).json({ msg: e.message });
   }
 
-  res.status(500).send({ msg: "something went wrong!!!" });
+  res.status(500).json({ msg: "something went wrong!!!" });
 };
