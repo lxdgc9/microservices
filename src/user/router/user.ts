@@ -12,7 +12,7 @@ r.get("/", getUsers);
 
 r.get(
   "/:id",
-  param("id").isMongoId().withMessage("invalid id param"),
+  param("id").isMongoId(),
   validateReq,
   getUserById
 );

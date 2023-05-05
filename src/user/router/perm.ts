@@ -1,60 +1,91 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
+import { Types } from "mongoose";
+import { BadReqErr } from "../err";
+import { delPerm } from "../handler/role/perm/del";
 import { getPerms } from "../handler/role/perm/get";
 import { getPermById } from "../handler/role/perm/get-id";
-import { delPermGr } from "../handler/role/perm/group/del";
-import { getPermGr } from "../handler/role/perm/group/get";
-import { modPermGr } from "../handler/role/perm/group/mod";
-import { newPermGr } from "../handler/role/perm/group/new";
+import { delGroup } from "../handler/role/perm/group/del";
+import { getGroup } from "../handler/role/perm/group/get";
+import { modGroup } from "../handler/role/perm/group/mod";
+import { newGroup } from "../handler/role/perm/group/new";
+import { modPerm } from "../handler/role/perm/mod";
 import { newPerm } from "../handler/role/perm/new";
 import { validateReq } from "../middie";
 
 export const r = Router();
 
-r.get("/group", getPermGr);
+r.get("/group", getGroup);
 r.post(
   "/group",
-  body("name").notEmpty().withMessage("name required"),
+  body("name").notEmpty(),
   validateReq,
-  newPermGr
+  newGroup
 );
 r.patch(
   "/group/:id",
   [
-    param("id").isMongoId().withMessage("invalid param id"),
+    param("id").isMongoId(),
     body("name")
       .optional({ values: "null" })
-      .isLength({ min: 1, max: 255 })
-      .withMessage("invalid name. 1 <= name.length <= 255"),
-    body("permIds")
+      .isLength({ min: 1, max: 255 }),
+    body("groupIds")
       .optional({ values: "falsy" })
       .isArray()
-      .withMessage("permIds must be array of mongoId"),
+      .custom((v) => {
+        const isValid = v.every((id: string) =>
+          Types.ObjectId.isValid(id)
+        );
+        if (!isValid) {
+          throw new BadReqErr("invalid ObjectId in array");
+        }
+        return true;
+      }),
   ],
   validateReq,
-  modPermGr
+  modGroup
 );
-
 r.delete(
   "/group/:id",
-  param("id").isMongoId().withMessage("invalid param id"),
+  param("id").isMongoId(),
   validateReq,
-  delPermGr
+  delGroup
 );
 
 r.get("/", getPerms);
-r.get("/:id", [], validateReq, getPermById);
+r.get(
+  "/:id",
+  param("id").isMongoId(),
+  validateReq,
+  getPermById
+);
 r.post(
   "/",
   [
-    body("sign").notEmpty().withMessage("sign required"),
-    body("desc").notEmpty().withMessage("desc required"),
-    body("groupId")
-      .notEmpty()
-      .withMessage("groupId required")
-      .isMongoId()
-      .withMessage("invalid groupId"),
+    body("sign").notEmpty(),
+    body("desc").notEmpty(),
+    body("groupId").notEmpty().isMongoId(),
   ],
   validateReq,
   newPerm
+);
+r.patch(
+  "/:id",
+  [
+    param("id").isMongoId(),
+    body("desc")
+      .isLength({ min: 1, max: 255 })
+      .optional({ values: "falsy" }),
+    body("groupId")
+      .isMongoId()
+      .optional({ values: "falsy" }),
+  ],
+  validateReq,
+  modPerm
+);
+r.delete(
+  "/:id",
+  param("id").isMongoId(),
+  validateReq,
+  delPerm
 );

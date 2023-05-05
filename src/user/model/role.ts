@@ -30,9 +30,4 @@ const schema = new Schema<IRole>(
   }
 );
 
-schema.index({
-  perms: 1,
-  createdAt: -1,
-});
-
-export const Role = model<IRole>("role", schema, "Role");
+export const Role = model<IRole>("role", schema);

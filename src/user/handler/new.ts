@@ -5,18 +5,14 @@ import { Role } from "../model/role";
 import { User } from "../model/user";
 
 type Dto = {
-  password: string;
   prof: Record<string, string>;
+  password: string;
   role: Types.ObjectId;
   active?: boolean;
 };
 
-export const newUser: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
-  const { password, prof, role, active }: Dto = req.body;
+export const newUser: RequestHandler = async (req, res, next) => {
+  const { prof, password, role, active }: Dto = req.body;
 
   try {
     if (await Role.findById(role)) {

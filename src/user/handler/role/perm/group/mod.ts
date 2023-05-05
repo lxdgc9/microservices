@@ -6,45 +6,54 @@ import { PermGr } from "../../../../model/perm-gr";
 
 type Dto = {
   name?: string;
-  permIds?: Types.ObjectId[];
+  groupIds?: Types.ObjectId[];
 };
 
-export const modPermGr: RequestHandler = async (req, res, next) => {
-  const { name, permIds }: Dto = req.body;
+export const modGroup: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  const { name, groupIds }: Dto = req.body;
   try {
-    const permGr = await PermGr.findById(req.params.id);
-    if (!permGr) {
-      throw new BadReqErr("permGr doesn't exist");
+    const group = await PermGr.findById(req.params.id);
+    if (!group) {
+      throw new BadReqErr("permission group doesn't exist");
     }
 
-    if (permIds?.length) {
-      const perms = await Perm.find({ _id: permIds });
-      if (permIds.length > perms.length) {
-        throw new BadReqErr("permIds doesn't match");
+    if (groupIds) {
+      const perms = await Perm.find({
+        _id: { $in: groupIds },
+      });
+      if (groupIds.length > perms.length) {
+        throw new Error("groupIds doesn't match");
       }
 
-      const permsRemove = permGr.perms.filter((p) => !permIds.includes(p));
-      await permGr.updateOne({
-        $set: {
-          name,
-          perms: permIds,
-        },
-      });
-      await Perm.deleteMany({ _id: permsRemove });
+      Promise.all([
+        await group.updateOne({
+          $set: {
+            name,
+            perms: groupIds,
+          },
+        }),
+        await Perm.deleteMany({
+          _id: group.perms.filter(
+            (p) => !groupIds.includes(p)
+          ),
+        }),
+      ]);
     } else {
-      await permGr.updateOne({
-        $set: {
-          name,
-        },
+      await group.updateOne({
+        $set: { name },
       });
     }
 
-    const detail = await PermGr.findById(permGr._id).populate({
-      path: "perms",
-      select: "-group",
+    res.json({
+      group: await PermGr.findById(group._id).populate({
+        path: "perms",
+        select: "-group",
+      }),
     });
-
-    res.send({ permGr: detail });
   } catch (e) {
     next(e);
   }

@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { body, param } from "express-validator";
-import { Types } from "mongoose";
-import { BadReqErr } from "../err";
 import { delRole } from "../handler/role/del";
 import { getRoles } from "../handler/role/get";
 import { getRoleById } from "../handler/role/get-id";
@@ -14,43 +12,27 @@ export const r = Router();
 r.get("/", getRoles);
 r.get(
   "/:id",
-  param("id").isMongoId().withMessage("invalid id param"),
+  param("id").isMongoId(),
   validateReq,
   getRoleById
 );
 r.post(
   "/",
-  [
-    body("name").notEmpty(),
-    body("permIds")
-      .isArray()
-      .custom((v) => {
-        if (v.length > 0) {
-          const isValid = v.every((id: Types.ObjectId) =>
-            Types.ObjectId.isValid(id)
-          );
-          if (!isValid) {
-            throw new BadReqErr("invalid permIds");
-          }
-          return true;
-        }
-        throw new BadReqErr("permIds is required");
-      }),
-  ],
+  [body("name").notEmpty(), body("permIds").isArray()],
   validateReq,
   newRole
 );
 
 r.patch(
   "/:id",
-  param("id").isMongoId().withMessage("invalid id param"),
+  param("id").isMongoId(),
   validateReq,
   modRole
 );
 
 r.delete(
   "/:id",
-  param("id").isMongoId().withMessage("invalid id param"),
+  param("id").isMongoId(),
   validateReq,
   delRole
 );

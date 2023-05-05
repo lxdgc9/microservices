@@ -3,7 +3,7 @@ import { Schema, Types, model } from "mongoose";
 interface IPerm {
   sign: string;
   desc: string;
-  permGr: Types.ObjectId;
+  group: Types.ObjectId;
 }
 
 const schema = new Schema<IPerm>(
@@ -17,14 +17,13 @@ const schema = new Schema<IPerm>(
       type: String,
       required: true,
     },
-    permGr: {
+    group: {
       type: Schema.Types.ObjectId,
       ref: "perm-gr",
       required: true,
     },
   },
   {
-    collection: "Permission",
     toJSON: {
       virtuals: true,
       transform(_doc, ret, _opts) {
@@ -34,7 +33,5 @@ const schema = new Schema<IPerm>(
     },
   }
 );
-
-schema.index({ sign: 1, permGr: 1 });
 
 export const Perm = model<IPerm>("perm", schema);

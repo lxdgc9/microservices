@@ -1,13 +1,14 @@
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { BadReqErr } from "../../../err";
+import { ConflictErr } from "../../../err/confict";
 import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 
 type Dto = {
   sign?: string;
   desc?: string;
-  permGr?: Types.ObjectId;
+  groupId?: Types.ObjectId;
 };
 
 export const modPerm: RequestHandler = async (
@@ -15,39 +16,57 @@ export const modPerm: RequestHandler = async (
   res,
   next
 ) => {
-  const { sign, desc, permGr }: Dto = req.body;
-
+  const { sign, desc, groupId }: Dto = req.body;
   try {
-    const permMod = await Perm.findByIdAndUpdate(
-      req.params.id,
-      {
+    const perm = await Perm.findById(req.params.id);
+    if (!perm) {
+      throw new BadReqErr("permission doesn't exist");
+    }
+
+    if (
+      sign !== perm.sign &&
+      (await Perm.find({ sign })).length
+    ) {
+      throw new ConflictErr("sign duplicated");
+    }
+
+    if (groupId && !perm.group.equals(groupId)) {
+      const group = await PermGr.findById(groupId);
+      if (!group) {
+        throw new BadReqErr(
+          "permission group doesn't exist"
+        );
+      }
+      await Promise.all([
+        group.updateOne({
+          $addToSet: { perms: perm._id },
+        }),
+        PermGr.findByIdAndUpdate(perm.group, {
+          $pull: { perms: perm._id },
+        }),
+      ]);
+      await perm.updateOne({
         $set: {
           sign,
           desc,
-          group: permGr,
+          group: group._id,
         },
-      }
-    );
-    if (!permMod) {
-      throw new BadReqErr("perm doesn't exist");
+      });
+    } else {
+      await perm.updateOne({
+        $set: {
+          sign,
+          desc,
+        },
+      });
     }
 
     res.json({
-      perm: await Perm.findById(permMod._id).populate(
-        "permGr"
-      ),
+      perm: await Perm.findById(perm._id).populate({
+        path: "group",
+        select: "-perms",
+      }),
     });
-
-    if (permGr && !permMod.permGr.equals(permGr)) {
-      await Promise.all([
-        PermGr.findByIdAndUpdate(permMod.permGr, {
-          $pull: { perms: permMod._id },
-        }),
-        PermGr.findByIdAndUpdate(permGr, {
-          $addToSet: { perms: permMod._id },
-        }),
-      ]);
-    }
   } catch (e) {
     next(e);
   }

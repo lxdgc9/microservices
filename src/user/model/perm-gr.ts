@@ -19,7 +19,6 @@ const schema = new Schema<IPermGr>(
     ],
   },
   {
-    collection: "Permission Group",
     toJSON: {
       virtuals: true,
       transform(_doc, ret, _opts) {
@@ -29,7 +28,5 @@ const schema = new Schema<IPermGr>(
     },
   }
 );
-
-schema.index({ perms: 1 });
 
 export const PermGr = model<IPermGr>("perm-gr", schema);

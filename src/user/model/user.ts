@@ -38,7 +38,6 @@ const schema = new Schema<IUser>(
     },
   },
   {
-    collection: "User",
     timestamps: true,
     toJSON: {
       virtuals: true,
@@ -61,16 +60,12 @@ const schema = new Schema<IUser>(
 schema.index({ "attrs.k": 1, "attrs.v": 1 });
 
 schema.pre("save", async function (next) {
-  let user = this;
-
+  if (!this.isModified("password")) {
+    return next();
+  }
   try {
-    if (!user.isModified("password")) {
-      next();
-      return;
-    }
     const salt = await genSalt(10);
-    const hashed = await hash(user.password, salt);
-    user.password = hashed;
+    this.password = await hash(this.password, salt);
     next();
   } catch (e) {
     console.log(e);

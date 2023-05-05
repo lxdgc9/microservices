@@ -3,16 +3,22 @@ import { BadReqErr } from "../../../../err";
 import { Perm } from "../../../../model/perm";
 import { PermGr } from "../../../../model/perm-gr";
 
-export const delPermGr: RequestHandler = async (req, res, next) => {
+export const delGroup: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
-    const permGr = await PermGr.findByIdAndDelete(req.params.id);
-    if (!permGr) {
-      throw new BadReqErr("permGr doesn't exist");
+    const group = await PermGr.findByIdAndDelete(
+      req.params.id
+    );
+    if (!group) {
+      throw new BadReqErr("permission group doesn't exist");
     }
 
-    await Perm.deleteMany({ _id: permGr.perms });
+    res.json({ msg: "delete successfully" });
 
-    res.sendStatus(204);
+    Perm.deleteMany({ _id: group.perms });
   } catch (e) {
     next(e);
   }

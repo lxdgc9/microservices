@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { BadReqErr } from "../../../err";
+import { ConflictErr } from "../../../err/confict";
 import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 
@@ -10,34 +11,40 @@ type Dto = {
   groupId: Types.ObjectId;
 };
 
-export const newPerm: RequestHandler = async (req, res, next) => {
+export const newPerm: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   const { sign, desc, groupId }: Dto = req.body;
+
   try {
-    if (await Perm.findOne({ sign })) {
-      throw new BadReqErr("perm already exists");
+    const perm = await Perm.findOne({ sign });
+    if (perm) {
+      throw new ConflictErr("permission already exists");
     }
 
-    const permGr = await PermGr.findById(groupId);
-    if (!permGr) {
-      throw new BadReqErr("permGrId doesn't exist");
+    const group = await PermGr.findById(groupId);
+    if (!group) {
+      throw new BadReqErr("permission group doesn't exist");
     }
 
-    const perm = new Perm({
+    const newPerm = new Perm({
       sign,
       desc,
-      group: permGr._id,
+      group: group._id,
     });
-    await perm.save();
+    await newPerm.save();
 
-    await permGr.updateOne({
-      $addToSet: {
-        perms: perm._id,
-      },
+    await group.updateOne({
+      $addToSet: { perms: newPerm._id },
     });
 
-    const detail = await Perm.findById(perm._id).populate("group");
-
-    res.status(201).send({ perm: detail });
+    res.status(201).send({
+      perm: await Perm.findById(newPerm._id).populate(
+        "group"
+      ),
+    });
   } catch (e) {
     next(e);
   }
