@@ -4,8 +4,8 @@ import { UnauthorizedErr } from "../err";
 import { User } from "../model/user";
 
 type Dto = {
-  type: string;
-  sign: string;
+  k: string;
+  v: string;
   password: string;
 };
 
@@ -14,14 +14,18 @@ export const login: RequestHandler = async (
   res,
   next
 ) => {
-  const { type, sign, password }: Dto = req.body;
-
-  console.log(req.body);
+  const { k, v, password }: Dto = req.body;
 
   try {
     const user = await User.findOne({
       attrs: {
-        $elemMatch: { k: type, v: sign },
+        $elemMatch: { k: k, v: v },
+      },
+    }).populate({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
       },
     });
     if (!user) {
