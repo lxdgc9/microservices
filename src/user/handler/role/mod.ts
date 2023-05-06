@@ -1,6 +1,6 @@
+import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
-import { BadReqErr } from "../../err";
 import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
 

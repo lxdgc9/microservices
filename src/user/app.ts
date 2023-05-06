@@ -1,5 +1,5 @@
+import { errHandler } from "@lxdgc9/pkg/dist/middie";
 import express from "express";
-import { errHandler } from "./middie";
 import { r as permRouter } from "./router/perm";
 import { r as roleRouter } from "./router/role";
 import { r as userRouter } from "./router/user";
@@ -13,7 +13,7 @@ app.use("/api/users/roles", roleRouter);
 app.use("/api/users", userRouter);
 
 app.all("*", (_req, res) => {
-  res.status(404).json({ msg: "not found" });
+  res.status(404).json({ msg: "Request not found" });
 });
 
 app.use(errHandler);

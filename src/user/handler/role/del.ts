@@ -1,5 +1,5 @@
+import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { BadReqErr } from "../../err";
 import { Role } from "../../model/role";
 
 export const delRole: RequestHandler = async (

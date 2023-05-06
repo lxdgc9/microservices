@@ -1,5 +1,5 @@
+import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { NotFoundErr } from "../../../err";
 import { Perm } from "../../../model/perm";
 
 export const getPermById: RequestHandler = async (

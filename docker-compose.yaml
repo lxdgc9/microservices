@@ -13,6 +13,7 @@ services:
     depends_on:
       - nats
       - user
+      - log
   nats:
     image: nats-streaming:0.17.0
     command: [
@@ -36,8 +37,11 @@ services:
     networks:
       - bridge
   user:
-    image: gdvn/course_ware-user
-    build: ./src/user
+    image: gdvn/courseware-user
+    build: 
+      context: ./src/user
+      secrets:
+        - npmrc
     ports:
       - 3000:3000
     env_file:
@@ -47,13 +51,36 @@ services:
       - MONGO_URI=${MONGO_URI_USER_SRV}
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=user-srv
-      - NATS_CLUSTER_ID=course_ware
+      - NATS_CLUSTER_ID=courseware
     volumes:
       - ./src/user:/usr/app:rw
     networks:
       - bridge
     depends_on:
       - nats
+  log:
+    image: gdvn/courseware-log
+    build: ./src/log
+    ports:
+      - 3001:3000
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URI=${MONGO_URI_LOG_SRV}
+      - NATS_URL=http://nats:4222
+      - NATS_CLIENT_ID=log-srv
+      - NATS_CLUSTER_ID=courseware
+    volumes:
+      - ./src/log:/usr/app:rw
+    networks:
+      - bridge
+    depends_on:
+      - nats
+
+secrets:
+  npmrc:
+    file: .npmrc
 
 networks:
   bridge:

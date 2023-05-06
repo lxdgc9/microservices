@@ -1,7 +1,8 @@
 import { connect } from "mongoose";
 import { app } from "./app";
-import { natsWrapper } from "./nats-wrapper";
+import { nats } from "./nats";
 
+// Top level async/await
 (async () => {
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI must be defined");
@@ -17,22 +18,24 @@ import { natsWrapper } from "./nats-wrapper";
   }
 
   try {
-    await natsWrapper.connect(
+    await nats.connect(
       process.env.NATS_CLUSTER_ID,
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
-    natsWrapper.client.on("close", () => {
+
+    nats.cli.on("close", () => {
       console.log("NATS connection closed!");
       process.exit();
     });
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
+
+    process.on("SIGINT", () => nats.cli.close());
+    process.on("SIGTERM", () => nats.cli.close());
 
     connect(process.env.MONGO_URI);
     console.log("Connected to MongoDb");
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.log(e);
   }
 
   app.listen(3000, () => {

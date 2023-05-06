@@ -1,3 +1,4 @@
+import { validate } from "@lxdgc9/pkg/dist/middie";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { Types } from "mongoose";
@@ -6,7 +7,6 @@ import { getRoles } from "../handler/role/get";
 import { getRoleById } from "../handler/role/get-id";
 import { modRole } from "../handler/role/mod";
 import { newRole } from "../handler/role/new";
-import { validateReq } from "../middie";
 
 export const r = Router();
 
@@ -14,7 +14,7 @@ r.get("/", getRoles);
 r.get(
   "/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   getRoleById
 );
 r.post(
@@ -35,7 +35,7 @@ r.post(
         return true;
       }),
   ],
-  validateReq,
+  validate,
   newRole
 );
 
@@ -58,13 +58,13 @@ r.patch(
         return true;
       }),
   ],
-  validateReq,
+  validate,
   modRole
 );
 
 r.delete(
   "/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   delRole
 );

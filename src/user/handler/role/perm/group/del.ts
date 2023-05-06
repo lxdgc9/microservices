@@ -1,5 +1,5 @@
+import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { BadReqErr } from "../../../../err";
 import { Perm } from "../../../../model/perm";
 import { PermGr } from "../../../../model/perm-gr";
 

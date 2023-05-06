@@ -1,10 +1,10 @@
+import { validate } from "@lxdgc9/pkg/dist/middie";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { getUsers } from "../handler/get";
 import { getUserById } from "../handler/get-id";
 import { login } from "../handler/login";
 import { newUser } from "../handler/new";
-import { validateReq } from "../middie";
 
 export const r = Router();
 
@@ -13,7 +13,7 @@ r.get("/", getUsers);
 r.get(
   "/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   getUserById
 );
 
@@ -24,7 +24,7 @@ r.post(
     body("v").notEmpty(),
     body("password").notEmpty(),
   ],
-  validateReq,
+  validate,
   login
 );
 
@@ -43,6 +43,6 @@ r.post(
       .isBoolean()
       .optional({ values: "falsy" }),
   ],
-  validateReq,
+  validate,
   newUser
 );

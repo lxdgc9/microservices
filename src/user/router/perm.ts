@@ -1,3 +1,4 @@
+import { validate } from "@lxdgc9/pkg/dist/middie";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { Types } from "mongoose";
@@ -10,7 +11,6 @@ import { modGroup } from "../handler/role/perm/group/mod";
 import { newGroup } from "../handler/role/perm/group/new";
 import { modPerm } from "../handler/role/perm/mod";
 import { newPerm } from "../handler/role/perm/new";
-import { validateReq } from "../middie";
 
 export const r = Router();
 
@@ -18,7 +18,7 @@ r.get("/group", getGroup);
 r.post(
   "/group",
   body("name").notEmpty(),
-  validateReq,
+  validate,
   newGroup
 );
 r.patch(
@@ -43,13 +43,13 @@ r.patch(
         return true;
       }),
   ],
-  validateReq,
+  validate,
   modGroup
 );
 r.delete(
   "/group/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   delGroup
 );
 
@@ -57,7 +57,7 @@ r.get("/", getPerms);
 r.get(
   "/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   getPermById
 );
 r.post(
@@ -67,7 +67,7 @@ r.post(
     body("desc").notEmpty(),
     body("groupId").notEmpty().isMongoId(),
   ],
-  validateReq,
+  validate,
   newPerm
 );
 r.patch(
@@ -81,12 +81,12 @@ r.patch(
       .isMongoId()
       .optional({ values: "falsy" }),
   ],
-  validateReq,
+  validate,
   modPerm
 );
 r.delete(
   "/:id",
   param("id").isMongoId(),
-  validateReq,
+  validate,
   delPerm
 );

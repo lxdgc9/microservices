@@ -1,7 +1,9 @@
+import {
+  BadReqErr,
+  ConflictErr,
+} from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
-import { BadReqErr } from "../err";
-import { ConflictErr } from "../err/confict";
 import { Role } from "../model/role";
 import { User } from "../model/user";
 

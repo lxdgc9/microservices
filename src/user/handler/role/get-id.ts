@@ -1,10 +1,16 @@
+import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { NotFoundErr } from "../../err";
 import { Role } from "../../model/role";
 
-export const getRoleById: RequestHandler = async (req, res, next) => {
+export const getRoleById: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
   try {
-    const role = await Role.findById(req.params.id).populate({
+    const role = await Role.findById(
+      req.params.id
+    ).populate({
       path: "perms",
       select: "-group",
     });

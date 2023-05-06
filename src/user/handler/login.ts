@@ -1,6 +1,6 @@
+import { UnauthorizedErr } from "@lxdgc9/pkg/dist/err";
 import { compare } from "bcryptjs";
 import { RequestHandler } from "express";
-import { UnauthorizedErr } from "../err";
 import { User } from "../model/user";
 
 type Dto = {
