@@ -12,5 +12,13 @@ export const errHandler: ErrorRequestHandler = (
     return res.status(e.code).json({ msg: e.message });
   }
 
+  if (
+    ["JsonWebTokenError", "TokenExpiredError"].includes(
+      e.name
+    )
+  ) {
+    return res.status(400).json({ msg: e.message });
+  }
+
   res.status(500).json({ msg: "something went wrong!!!" });
 };

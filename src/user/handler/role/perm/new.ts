@@ -43,9 +43,10 @@ export const newPerm: RequestHandler = async (
     });
 
     res.status(201).send({
-      perm: await Perm.findById(newPerm._id).populate(
-        "group"
-      ),
+      perm: await Perm.findById(newPerm._id).populate({
+        path: "group",
+        select: "-perms",
+      }),
     });
   } catch (e) {
     next(e);
