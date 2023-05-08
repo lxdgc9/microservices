@@ -40,18 +40,19 @@ export const newRole: RequestHandler = async (
     });
 
     new LogPublisher(nats.cli).publish({
-      userId: req.user?.id,
       act: "NEW",
       model: Role.modelName,
       status: true,
       docId: role._id,
+      userId: req.user?.id,
     });
   } catch (e) {
     new LogPublisher(nats.cli).publish({
-      userId: req.user?.id,
       act: "NEW",
       model: Role.modelName,
       status: false,
+      docId: new Types.ObjectId("sakdjas"),
+      userId: req.user?.id,
     });
     next(e);
   }

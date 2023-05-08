@@ -13,7 +13,7 @@ services:
     depends_on:
       - nats
       - user
-      - log
+      # - log
   nats:
     image: nats-streaming:0.17.0
     command: [
@@ -60,7 +60,10 @@ services:
       - nats
   log:
     image: gdvn/courseware-log
-    build: ./src/log
+    build: 
+      context: ./src/log
+      secrets:
+        - npmrc
     ports:
       - 3001:3000
     env_file:

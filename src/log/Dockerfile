@@ -2,9 +2,9 @@ FROM node:alpine
 
 WORKDIR /usr/app
 
-COPY package.json yarn.lock ./
+COPY package.json yarn.lock .npmrc ./
 
-RUN yarn
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc yarn
 
 COPY . ./
 

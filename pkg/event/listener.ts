@@ -11,32 +11,28 @@ export abstract class Listener<T extends Event> {
   protected ackWait = 5000;
 
   abstract subject: T["subject"];
-  abstract queueGrName: string;
+  abstract qGroup: string;
   abstract onMsg(data: T["data"], msg: Message): void;
 
   constructor(cli: Stan) {
     this.cli = cli;
   }
 
-  subOpts() {
-    return this.cli
-      .subscriptionOptions()
-      .setDeliverAllAvailable()
-      .setManualAckMode(true)
-      .setAckWait(this.ackWait)
-      .setDurableName(this.queueGrName);
-  }
-
   listen() {
     const sub = this.cli.subscribe(
       this.subject,
-      this.queueGrName,
-      this.subOpts()
+      this.qGroup,
+      this.cli
+        .subscriptionOptions()
+        .setDeliverAllAvailable()
+        .setManualAckMode(true)
+        .setAckWait(this.ackWait)
+        .setDurableName(this.qGroup)
     );
 
     sub.on("message", (msg: Message) => {
       console.log(
-        `Msg received: ${this.subject} / ${this.queueGrName}`
+        `Msg received: ${this.subject} / ${this.qGroup}`
       );
 
       this.onMsg(this.parseMsg(msg), msg);

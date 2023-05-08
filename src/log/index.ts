@@ -1,7 +1,7 @@
 import { connect } from "mongoose";
 import { app } from "./app";
-import { LogListener } from "./event/listener/log-listener";
-import { natsWrapper } from "./nats-wrapper";
+import { LogListener } from "./event/listener/log";
+import { nats } from "./nats";
 
 (async () => {
   if (!process.env.MONGO_URI) {
@@ -18,19 +18,19 @@ import { natsWrapper } from "./nats-wrapper";
   }
 
   try {
-    await natsWrapper.connect(
+    await nats.connect(
       process.env.NATS_CLUSTER_ID,
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
-    natsWrapper.client.on("close", () => {
+    nats.cli.on("close", () => {
       console.log("NATS connection closed!");
       process.exit();
     });
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
+    process.on("SIGINT", () => nats.cli.close());
+    process.on("SIGTERM", () => nats.cli.close());
 
-    new LogListener(natsWrapper.client).listen();
+    new LogListener(nats.cli).listen();
 
     connect(process.env.MONGO_URI);
     console.log("Connected to MongoDb");

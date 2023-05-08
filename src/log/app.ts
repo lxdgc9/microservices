@@ -1,5 +1,5 @@
+import { errHandler } from "@lxdgc9/pkg/dist/middie/err-handler";
 import express from "express";
-import { errHandler } from "./middie/err-handler";
 
 const app = express();
 
