@@ -1,3 +1,3 @@
 export enum Subject {
-  Log = "log_srv",
+  Log = "log-srv",
 }

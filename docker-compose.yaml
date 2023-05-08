@@ -13,9 +13,9 @@ services:
     depends_on:
       - nats
       - user
-      # - log
+      - log
   nats:
-    image: nats-streaming:0.17.0
+    image: nats-streaming:alpine
     command: [
       "-p", 
       "4222", 
