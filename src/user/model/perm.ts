@@ -1,14 +1,14 @@
 import { Schema, Types, model } from "mongoose";
 
 interface IPerm {
-  sign: string;
+  code: string;
   desc: string;
   group: Types.ObjectId;
 }
 
 const schema = new Schema<IPerm>(
   {
-    sign: {
+    code: {
       type: String,
       required: true,
       unique: true,

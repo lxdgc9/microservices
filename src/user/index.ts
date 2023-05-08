@@ -1,11 +1,20 @@
 import { connect } from "mongoose";
 import { app } from "./app";
 import { nats } from "./nats";
+import { redis } from "./redis";
 
-// Top level async/await
 (async () => {
+  if (!process.env.ACCESS_TOKEN_SECRET) {
+    throw new Error("ACCESS_TOKEN_SECRET must be defined");
+  }
+  if (!process.env.REFRESH_TOKEN_SECRET) {
+    throw new Error("REFRESH_TOKEN_SECRET must be defined");
+  }
   if (!process.env.MONGO_URI) {
     throw new Error("MONGO_URI must be defined");
+  }
+  if (!process.env.REDIS_URI) {
+    throw new Error("REDIS_HOST must be defined");
   }
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error("NATS_CLIENT_ID must be defined");
@@ -34,6 +43,11 @@ import { nats } from "./nats";
 
     connect(process.env.MONGO_URI);
     console.log("Connected to MongoDb");
+
+    await redis.connect();
+    await redis
+      .ping()
+      .then(() => console.log("Connected to Redis"));
   } catch (e) {
     console.log(e);
   }

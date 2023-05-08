@@ -7,7 +7,7 @@ export interface Logger {
     act: "GET" | "NEW" | "MOD" | "DEL";
     model: string;
     status: boolean;
-    docId: Types.ObjectId;
-    userId?: Types.ObjectId;
+    doc?: Types.ObjectId;
+    user?: Types.ObjectId;
   };
 }

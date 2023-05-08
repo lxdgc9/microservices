@@ -36,6 +36,12 @@ services:
       - 8222
     networks:
       - bridge
+  cache:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - bridge
   user:
     image: gdvn/courseware-user
     build: 
@@ -52,12 +58,14 @@ services:
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=user-srv
       - NATS_CLUSTER_ID=courseware
+      - REDIS_URI=redis://cache:6379
     volumes:
       - ./src/user:/usr/app:rw
     networks:
       - bridge
     depends_on:
       - nats
+      - cache
   log:
     image: gdvn/courseware-log
     build: 

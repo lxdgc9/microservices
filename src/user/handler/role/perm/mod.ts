@@ -8,7 +8,7 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 
 type Dto = {
-  sign?: string;
+  code?: string;
   desc?: string;
   groupId?: Types.ObjectId;
 };
@@ -18,7 +18,7 @@ export const modPerm: RequestHandler = async (
   res,
   next
 ) => {
-  const { sign, desc, groupId }: Dto = req.body;
+  const { code, desc, groupId }: Dto = req.body;
   try {
     const perm = await Perm.findById(req.params.id);
     if (!perm) {
@@ -26,10 +26,10 @@ export const modPerm: RequestHandler = async (
     }
 
     if (
-      sign !== perm.sign &&
-      (await Perm.find({ sign })).length
+      code !== perm.code &&
+      (await Perm.find({ code })).length
     ) {
-      throw new ConflictErr("sign duplicated");
+      throw new ConflictErr("code duplicated");
     }
 
     if (groupId && !perm.group.equals(groupId)) {
@@ -49,7 +49,7 @@ export const modPerm: RequestHandler = async (
       ]);
       await perm.updateOne({
         $set: {
-          sign,
+          code,
           desc,
           group: group._id,
         },
@@ -57,7 +57,7 @@ export const modPerm: RequestHandler = async (
     } else {
       await perm.updateOne({
         $set: {
-          sign,
+          code,
           desc,
         },
       });

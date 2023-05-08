@@ -10,18 +10,17 @@ class Nats {
     return this._cli;
   }
 
-  async connect(
-    cluster: string,
-    client: string,
-    url: string
-  ) {
-    try {
-      this._cli = _nats.connect(cluster, client, { url });
-      console.log("Connected to NATS");
-    } catch (e) {
-      console.log("vl");
-      throw e;
-    }
+  connect(cluster: string, client: string, url: string) {
+    this._cli = _nats.connect(cluster, client, { url });
+
+    return new Promise<void>((resolve, reject) => {
+      this.cli.on("connect", () => {
+        console.log("Connected to NATS");
+        resolve();
+      });
+
+      this.cli.on("error", (e) => reject(e));
+    });
   }
 }
 

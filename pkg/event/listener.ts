@@ -34,7 +34,6 @@ export abstract class Listener<T extends Event> {
       console.log(
         `Msg received: ${this.subject} / ${this.qGroup}`
       );
-
       this.onMsg(this.parseMsg(msg), msg);
     });
   }

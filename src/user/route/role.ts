@@ -1,4 +1,7 @@
-import { validate } from "@lxdgc9/pkg/dist/middie";
+import {
+  decodeJwt,
+  validate,
+} from "@lxdgc9/pkg/dist/middie";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { Types } from "mongoose";
@@ -10,11 +13,12 @@ import { newRole } from "../handler/role/new";
 
 export const r = Router();
 
-r.get("/", getRoles);
+r.get("/", decodeJwt, getRoles);
 r.get(
   "/:id",
   param("id").isMongoId(),
   validate,
+  decodeJwt,
   getRoleById
 );
 r.post(
@@ -36,6 +40,7 @@ r.post(
       }),
   ],
   validate,
+  decodeJwt,
   newRole
 );
 
@@ -59,6 +64,7 @@ r.patch(
       }),
   ],
   validate,
+  decodeJwt,
   modRole
 );
 
@@ -66,5 +72,6 @@ r.delete(
   "/:id",
   param("id").isMongoId(),
   validate,
+  decodeJwt,
   delRole
 );

@@ -8,7 +8,7 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 
 type Dto = {
-  sign: string;
+  code: string;
   desc: string;
   groupId: Types.ObjectId;
 };
@@ -18,10 +18,10 @@ export const newPerm: RequestHandler = async (
   res,
   next
 ) => {
-  const { sign, desc, groupId }: Dto = req.body;
+  const { code, desc, groupId }: Dto = req.body;
 
   try {
-    const perm = await Perm.findOne({ sign });
+    const perm = await Perm.findOne({ code });
     if (perm) {
       throw new ConflictErr("permission already exists");
     }
@@ -32,7 +32,7 @@ export const newPerm: RequestHandler = async (
     }
 
     const newPerm = new Perm({
-      sign,
+      code,
       desc,
       group: group._id,
     });
