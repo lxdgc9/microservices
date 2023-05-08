@@ -1,7 +1,6 @@
 import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
-import { Actions } from "../../event/log-event";
 import { LogPublisher } from "../../event/publisher/log";
 import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
@@ -42,17 +41,17 @@ export const newRole: RequestHandler = async (
 
     new LogPublisher(nats.cli).publish({
       userId: req.user?.id,
-      action: Actions.new,
-      resource: Role.modelName,
-      success: true,
-      documentId: role._id,
+      act: "NEW",
+      model: Role.modelName,
+      status: true,
+      docId: role._id,
     });
   } catch (e) {
     new LogPublisher(nats.cli).publish({
       userId: req.user?.id,
-      action: Actions.new,
-      resource: Role.modelName,
-      success: false,
+      act: "NEW",
+      model: Role.modelName,
+      status: false,
     });
     next(e);
   }

@@ -19,6 +19,7 @@ class Nats {
       this._cli = _nats.connect(cluster, client, { url });
       console.log("Connected to NATS");
     } catch (e) {
+      console.log("vl");
       throw e;
     }
   }

@@ -1,9 +1,7 @@
-import { Publisher } from "../base-publisher";
-import { LogEvent } from "../log-event";
-import { Subjects } from "../subjects";
+import { Event } from "@lxdgc9/pkg/dist/event/log/event";
+import { Publisher } from "@lxdgc9/pkg/dist/event/publisher";
+import { Subject } from "@lxdgc9/pkg/dist/event/subject";
 
-class LogPublisher extends Publisher<LogEvent> {
-  subject: Subjects.Log = Subjects.Log;
+export class LogPublisher extends Publisher<Event> {
+  subject: Subject.Log = Subject.Log;
 }
-
-export { LogPublisher };

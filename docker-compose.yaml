@@ -29,7 +29,7 @@ services:
       "2", 
       "-SD", 
       "-cid", 
-      "course_ware"
+      "courseware"
     ]
     ports:
       - 4222

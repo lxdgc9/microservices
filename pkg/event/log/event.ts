@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { Subject } from "../subject";
 
-interface Event {
+export interface Event {
   subject: Subject.Log;
   data: {
     act: "GET" | "NEW" | "MOD" | "DEL";
@@ -11,5 +11,3 @@ interface Event {
     userId?: Types.ObjectId;
   };
 }
-
-export { Event };
