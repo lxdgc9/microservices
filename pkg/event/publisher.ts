@@ -16,14 +16,21 @@ export abstract class Publisher<T extends Event> {
   }
 
   async publish(data: T["data"]) {
-    try {
-      this.cli.publish(this.subject, JSON.stringify(data));
-      console.log(
-        "Event published to subject",
-        this.subject
+    return new Promise<void>((resolve, reject) => {
+      this.cli.publish(
+        this.subject,
+        JSON.stringify(data),
+        (e) => {
+          if (e) {
+            return reject(e);
+          }
+          console.log(
+            "Event published to subject",
+            this.subject
+          );
+          resolve();
+        }
       );
-    } catch (e) {
-      throw e;
-    }
+    });
   }
 }

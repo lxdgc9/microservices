@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { verify } from "jsonwebtoken";
 import { Types } from "mongoose";
+import { UnauthorizedErr } from "../err";
 
 interface JwtPayload {
   id: Types.ObjectId;
@@ -22,7 +23,7 @@ export const decodeJwt: RequestHandler = (
 ) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    return next();
+    return next(new UnauthorizedErr("require token"));
   }
 
   try {

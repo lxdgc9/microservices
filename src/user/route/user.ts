@@ -1,4 +1,7 @@
-import { validate } from "@lxdgc9/pkg/dist/middie";
+import {
+  decodeJwt,
+  validate,
+} from "@lxdgc9/pkg/dist/middie";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { getUsers } from "../handler/get";
@@ -8,12 +11,13 @@ import { newUser } from "../handler/new";
 
 export const r = Router();
 
-r.get("/", getUsers);
+r.get("/", decodeJwt, getUsers);
 
 r.get(
   "/:id",
   param("id").isMongoId(),
   validate,
+  decodeJwt,
   getUserById
 );
 
@@ -44,5 +48,6 @@ r.post(
       .optional({ values: "falsy" }),
   ],
   validate,
+  decodeJwt,
   newUser
 );
