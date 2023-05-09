@@ -32,19 +32,19 @@ export const newRole: RequestHandler = async (
     });
     await role.save();
 
-    res.json({
-      role: await Role.findById(role._id).populate({
-        path: "perms",
-        select: "-group",
-      }),
+    const detail = await Role.findById(role._id).populate({
+      path: "perms",
+      select: "-group",
     });
+
+    res.json({ role: detail });
 
     new LogPublisher(nats.cli).publish({
       act: "NEW",
       model: Role.modelName,
+      doc: detail!,
+      actorId: req.user?.id,
       status: true,
-      doc: role._id,
-      user: req.user!.id,
     });
   } catch (e) {
     next(e);
@@ -52,8 +52,7 @@ export const newRole: RequestHandler = async (
       act: "NEW",
       model: Role.modelName,
       status: false,
-      doc: null,
-      user: null,
+      actorId: req.user?.id,
     });
   }
 };

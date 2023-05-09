@@ -4,6 +4,7 @@ import {
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { LogPublisher } from "../event/publisher/log";
 import { NewUserPublisher } from "../event/publisher/new-user";
 import { Role } from "../model/role";
 import { User } from "../model/user";
@@ -93,6 +94,13 @@ export const newUser: RequestHandler = async (
 
     new NewUserPublisher(nats.cli).publish({
       actor: detail!,
+    });
+    new LogPublisher(nats.cli).publish({
+      act: "NEW",
+      model: User.modelName,
+      doc: detail!,
+      actorId: req.user?.id,
+      status: true,
     });
   } catch (e) {
     next(e);
