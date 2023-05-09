@@ -3,6 +3,7 @@ import { compare } from "bcryptjs";
 import { RequestHandler } from "express";
 import { sign } from "jsonwebtoken";
 import { User } from "../model/user";
+import { redis } from "../redis";
 
 type Dto = {
   k: string;
@@ -64,6 +65,14 @@ export const login: RequestHandler = async (
       accessToken,
       refreshToken,
     });
+
+    await redis.set(
+      `rf-tkn.${payload.id.toString()}`,
+      refreshToken,
+      {
+        EX: 36288001,
+      }
+    );
   } catch (e) {
     next(e);
   }
