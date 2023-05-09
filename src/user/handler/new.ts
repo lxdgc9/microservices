@@ -9,7 +9,7 @@ import { User } from "../model/user";
 
 type Dto = {
   prof: object;
-  password: string;
+  passwd: string;
   roleId: Types.ObjectId;
   active?: boolean;
 };
@@ -19,7 +19,7 @@ export const newUser: RequestHandler = async (
   res,
   next
 ) => {
-  const { prof, password, roleId, active }: Dto = req.body;
+  const { prof, passwd, roleId, active }: Dto = req.body;
 
   try {
     if (!(await Role.findById(roleId))) {
@@ -71,7 +71,7 @@ export const newUser: RequestHandler = async (
         k,
         v,
       })),
-      password,
+      passwd,
       role: roleId,
       active,
     });

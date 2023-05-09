@@ -6,7 +6,7 @@ interface IUser {
     k: string;
     v: string;
   }[];
-  password: string;
+  passwd: string;
   role: Types.ObjectId;
   active: boolean;
 }
@@ -23,7 +23,7 @@ const schema = new Schema<IUser>(
         },
       },
     ],
-    password: {
+    passwd: {
       type: String,
       required: true,
     },
@@ -50,7 +50,7 @@ const schema = new Schema<IUser>(
 
         delete ret._id;
         delete ret.attrs;
-        delete ret.password;
+        delete ret.passwd;
         delete ret.__v;
       },
     },
@@ -60,12 +60,12 @@ const schema = new Schema<IUser>(
 schema.index({ "attrs.k": 1, "attrs.v": 1 });
 
 schema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+  if (!this.isModified("passwd")) {
     return next();
   }
   try {
     const salt = await genSalt(10);
-    this.password = await hash(this.password, salt);
+    this.passwd = await hash(this.passwd, salt);
     next();
   } catch (e) {
     console.log(e);

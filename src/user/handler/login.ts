@@ -8,7 +8,7 @@ import { redis } from "../redis";
 type Dto = {
   k: string;
   v: string;
-  password: string;
+  passwd: string;
 };
 
 export const login: RequestHandler = async (
@@ -16,7 +16,7 @@ export const login: RequestHandler = async (
   res,
   next
 ) => {
-  const { k, v, password }: Dto = req.body;
+  const { k, v, passwd }: Dto = req.body;
 
   try {
     const user = await User.findOne({
@@ -40,7 +40,7 @@ export const login: RequestHandler = async (
       throw new UnauthorizedErr("user not found");
     }
 
-    const isMatch = await compare(password, user.password);
+    const isMatch = await compare(passwd, user.passwd);
     if (!isMatch) {
       throw new UnauthorizedErr("wrong password");
     }
