@@ -21,7 +21,7 @@ export const modPasswd: RequestHandler = async (
       throw new BadReqErr("user doesn't exist");
     }
 
-    const isMatch = compare(oldPasswd, user.passwd);
+    const isMatch = await compare(oldPasswd, user.passwd);
     if (!isMatch) {
       throw new BadReqErr("wrong password");
     }

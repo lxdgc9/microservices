@@ -52,6 +52,8 @@ export const newRole: RequestHandler = async (
       act: "NEW",
       model: Role.modelName,
       status: false,
+      doc: null,
+      user: null,
     });
   }
 };

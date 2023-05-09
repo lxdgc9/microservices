@@ -4,8 +4,10 @@ import {
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { NewUserPublisher } from "../event/publisher/new-user";
 import { Role } from "../model/role";
 import { User } from "../model/user";
+import { nats } from "../nats";
 
 type Dto = {
   prof: object;
@@ -77,14 +79,20 @@ export const newUser: RequestHandler = async (
     });
     await newUser.save();
 
-    res.status(201).json({
-      user: await User.findById(newUser._id).populate({
-        path: "role",
-        populate: {
-          path: "perms",
-          select: "-group",
-        },
-      }),
+    const detail = await User.findById(
+      newUser._id
+    ).populate({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
+      },
+    });
+
+    res.status(201).json({ user: detail });
+
+    new NewUserPublisher(nats.cli).publish({
+      actor: detail!,
     });
   } catch (e) {
     next(e);

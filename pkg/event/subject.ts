@@ -1,3 +1,5 @@
 export enum Subject {
-  Log = "log-srv",
+  LOG = "log-srv",
+
+  NEW_USER = "user-srv_new-user",
 }

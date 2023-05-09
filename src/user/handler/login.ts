@@ -69,9 +69,7 @@ export const login: RequestHandler = async (
     await redis.set(
       `rf-tkn.${payload.id.toString()}`,
       refreshToken,
-      {
-        EX: 36288001,
-      }
+      { EX: 36288001 }
     );
   } catch (e) {
     next(e);

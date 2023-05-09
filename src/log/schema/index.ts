@@ -1,11 +1,10 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 interface ILog {
   act: "GET" | "NEW" | "MOD" | "DEL";
-  model: string;
-  status: boolean;
   doc: any;
-  user: any;
+  actor: Types.ObjectId;
+  status: boolean;
 }
 
 export const schema = new Schema<ILog>(
@@ -15,15 +14,16 @@ export const schema = new Schema<ILog>(
       enum: ["GET", "NEW", "MOD", "DEL"],
       required: true,
     },
-    status: {
-      type: Boolean,
-      default: false,
-    },
     doc: {
       type: Schema.Types.Mixed,
     },
-    user: {
-      type: Schema.Types.Mixed,
+    actor: {
+      type: Schema.Types.ObjectId,
+      ref: "actor",
+    },
+    status: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -1,6 +1,7 @@
 import { connect } from "mongoose";
 import { app } from "./app";
 import { LogListener } from "./event/listener/log";
+import { NewUserListener } from "./event/listener/user/new";
 import { nats } from "./nats";
 
 (async () => {
@@ -30,6 +31,7 @@ import { nats } from "./nats";
     process.on("SIGINT", () => nats.cli.close());
     process.on("SIGTERM", () => nats.cli.close());
 
+    new NewUserListener(nats.cli).listen();
     new LogListener(nats.cli).listen();
 
     connect(process.env.MONGO_URI);

@@ -1,24 +1,30 @@
 import { Listener } from "@lxdgc9/pkg/dist/event/listener";
-import { Logger } from "@lxdgc9/pkg/dist/event/log/logger";
+import { Log } from "@lxdgc9/pkg/dist/event/log";
 import { Subject } from "@lxdgc9/pkg/dist/event/subject";
 import { model } from "mongoose";
 import { Message } from "node-nats-streaming";
 import { schema } from "../../schema";
 import { qGroup } from "./qgroup";
 
-export class LogListener extends Listener<Logger> {
-  subject = Subject.Log;
+export class LogListener extends Listener<Log> {
+  subject: Subject.LOG = Subject.LOG;
   qGroup = qGroup;
 
-  async onMsg(data: Logger["data"], msg: Message) {
-    const { act, model: _model, status, doc, user } = data;
+  async onMsg(data: Log["data"], msg: Message) {
+    const {
+      act,
+      doc,
+      actorId,
+      model: _model,
+      status,
+    } = data;
 
     const Model = model(_model, schema);
     const newDoc = new Model({
       act,
-      status,
       doc,
-      user,
+      actor: actorId,
+      status,
     });
     await newDoc.save();
 
