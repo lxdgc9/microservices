@@ -4,8 +4,10 @@ import {
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { LogPublisher } from "../../../event/publisher/log";
 import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
+import { nats } from "../../../nats";
 
 type Dto = {
   code: string;
@@ -42,11 +44,21 @@ export const newPerm: RequestHandler = async (
       $addToSet: { perms: newPerm._id },
     });
 
-    res.status(201).send({
-      perm: await Perm.findById(newPerm._id).populate({
-        path: "group",
-        select: "-perms",
-      }),
+    const detail = await Perm.findById(
+      newPerm._id
+    ).populate({
+      path: "group",
+      select: "-perms",
+    });
+
+    res.status(201).send({ perm: detail });
+
+    new LogPublisher(nats.cli).publish({
+      act: "NEW",
+      model: Perm.modelName,
+      doc: detail!,
+      actorId: req.user?.id,
+      status: true,
     });
   } catch (e) {
     next(e);

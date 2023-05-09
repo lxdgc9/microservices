@@ -1,7 +1,9 @@
 import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
+import { LogPublisher } from "../../../event/publisher/log";
 import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
+import { nats } from "../../../nats";
 
 export const delPerm: RequestHandler = async (
   req,
@@ -20,6 +22,14 @@ export const delPerm: RequestHandler = async (
 
     await PermGr.findByIdAndUpdate(perm.group, {
       $pull: { perms: perm._id },
+    });
+
+    new LogPublisher(nats.cli).publish({
+      act: "DEL",
+      model: Perm.modelName,
+      doc: perm,
+      actorId: req.user?.id,
+      status: true,
     });
   } catch (e) {
     next(e);

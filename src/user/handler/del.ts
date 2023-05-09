@@ -1,6 +1,8 @@
 import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
+import { LogPublisher } from "../event/publisher/log";
 import { User } from "../model/user";
+import { nats } from "../nats";
 
 export const delUser: RequestHandler = async (
   req,
@@ -14,6 +16,14 @@ export const delUser: RequestHandler = async (
     }
 
     res.json({ msg: "delete successfully" });
+
+    new LogPublisher(nats.cli).publish({
+      act: "DEL",
+      model: User.modelName,
+      doc: user,
+      actorId: req.user?.id,
+      status: true,
+    });
   } catch (e) {
     next(e);
   }

@@ -4,8 +4,10 @@ import {
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { LogPublisher } from "../../../event/publisher/log";
 import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
+import { nats } from "../../../nats";
 
 type Dto = {
   code?: string;
@@ -68,6 +70,14 @@ export const modPerm: RequestHandler = async (
         path: "group",
         select: "-perms",
       }),
+    });
+
+    new LogPublisher(nats.cli).publish({
+      act: "MOD",
+      model: Perm.modelName,
+      doc: perm,
+      actorId: req.user?.id,
+      status: true,
     });
   } catch (e) {
     next(e);

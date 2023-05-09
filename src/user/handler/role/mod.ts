@@ -1,8 +1,10 @@
 import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { LogPublisher } from "../../event/publisher/log";
 import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
+import { nats } from "../../nats";
 
 type Dto = {
   name?: string;
@@ -44,6 +46,14 @@ export const modRole: RequestHandler = async (
         path: "perms",
         select: "-group",
       }),
+    });
+
+    new LogPublisher(nats.cli).publish({
+      act: "MOD",
+      model: Role.modelName,
+      doc: role,
+      actorId: req.user?.id,
+      status: true,
     });
   } catch (e) {
     next(e);

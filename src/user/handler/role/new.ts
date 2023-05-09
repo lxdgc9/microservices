@@ -48,11 +48,5 @@ export const newRole: RequestHandler = async (
     });
   } catch (e) {
     next(e);
-    new LogPublisher(nats.cli).publish({
-      act: "NEW",
-      model: Role.modelName,
-      status: false,
-      actorId: req.user?.id,
-    });
   }
 };
