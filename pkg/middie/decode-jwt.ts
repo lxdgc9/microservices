@@ -3,7 +3,7 @@ import { verify } from "jsonwebtoken";
 import { Types } from "mongoose";
 import { UnauthorizedErr } from "../err";
 
-interface JwtPayload {
+export interface JwtPayload {
   id: Types.ObjectId;
   perms: string[];
 }

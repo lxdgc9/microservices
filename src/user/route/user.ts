@@ -8,6 +8,7 @@ import { getUsers } from "../handler/get";
 import { getUserById } from "../handler/get-id";
 import { login } from "../handler/login";
 import { newUser } from "../handler/new";
+import { refreshTkn } from "../handler/refresh-tkn";
 
 export const r = Router();
 
@@ -30,6 +31,13 @@ r.post(
   ],
   validate,
   login
+);
+
+r.post(
+  "/auth/refresh-token",
+  body("token").notEmpty(),
+  validate,
+  refreshTkn
 );
 
 r.post(
