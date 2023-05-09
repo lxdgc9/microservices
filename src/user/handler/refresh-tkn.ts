@@ -36,7 +36,6 @@ export const refreshTkn: RequestHandler = async (
 
     res.json({ accessToken, refreshToken });
 
-    console.log("b", id);
     await redis.set(`rf-tkn.${id}`, refreshToken, {
       EX: 36288001,
     });

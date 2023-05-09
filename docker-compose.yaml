@@ -66,6 +66,28 @@ services:
     depends_on:
       - nats
       - cache
+  course:
+    image: gdvn/courseware-course
+    build: 
+      context: ./src/course
+      secrets:
+        - npmrc
+    ports:
+      - 3001:3000
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URI=${MONGO_URI_COURSE_SRV}
+      - NATS_URL=http://nats:4222
+      - NATS_CLIENT_ID=course-srv
+      - NATS_CLUSTER_ID=courseware
+    volumes:
+      - ./src/course:/usr/app:rw
+    networks:
+      - bridge
+    depends_on:
+      - nats
   log:
     image: gdvn/courseware-log
     build: 
@@ -73,7 +95,7 @@ services:
       secrets:
         - npmrc
     ports:
-      - 3001:3000
+      - 3002:3000
     env_file:
       - .env
     environment:

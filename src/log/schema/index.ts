@@ -1,11 +1,11 @@
-import { Schema, Types } from "mongoose";
+import { Schema } from "mongoose";
 
 interface ILog {
   act: "GET" | "NEW" | "MOD" | "DEL";
   model: string;
   status: boolean;
-  docId: Types.ObjectId;
-  userId: Types.ObjectId;
+  doc: any;
+  user: any;
 }
 
 export const schema = new Schema<ILog>(
@@ -19,11 +19,11 @@ export const schema = new Schema<ILog>(
       type: Boolean,
       default: false,
     },
-    docId: {
-      type: Schema.Types.ObjectId,
+    doc: {
+      type: Schema.Types.Mixed,
     },
-    userId: {
-      type: Schema.Types.ObjectId,
+    user: {
+      type: Schema.Types.Mixed,
     },
   },
   {
@@ -37,3 +37,5 @@ export const schema = new Schema<ILog>(
     },
   }
 );
+
+schema.index({ createdAt: -1 });

@@ -1,5 +1,5 @@
 {
-  "name": "log",
+  "name": "log-srv",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
