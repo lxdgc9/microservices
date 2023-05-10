@@ -23,9 +23,6 @@ export const decodeJwt: RequestHandler = (
 ) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
-    if (process.env.NODE_ENV === "dev") {
-      return next();
-    }
     return next(new UnauthorizedErr("require token"));
   }
 
