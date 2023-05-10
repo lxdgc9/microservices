@@ -1,7 +1,9 @@
 import {
   decodeJwt,
+  guard,
   validate,
 } from "@lxdgc9/pkg/dist/middie";
+import { MNG_CODE } from "@lxdgc9/pkg/dist/perm";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { delUser } from "../handler/del";
@@ -15,13 +17,14 @@ import { refreshTkn } from "../handler/refresh-tkn";
 
 export const r = Router();
 
-r.get("/", decodeJwt, getUsers);
+r.get("/", decodeJwt, guard(MNG_CODE.GET_USER), getUsers);
 
 r.get(
   "/:id",
   param("id").isMongoId(),
   validate,
   decodeJwt,
+  guard(MNG_CODE.GET_USER),
   getUserById
 );
 
@@ -60,6 +63,7 @@ r.post(
   ],
   validate,
   decodeJwt,
+  guard(MNG_CODE.NEW_USER),
   newUser
 );
 
@@ -76,9 +80,22 @@ r.patch(
   ],
   validate,
   decodeJwt,
+  guard(MNG_CODE.MOD_USER),
   modPasswd
 );
 
-r.patch("/:id", validate, decodeJwt, modUser);
+r.patch(
+  "/:id",
+  validate,
+  decodeJwt,
+  guard(MNG_CODE.MOD_USER),
+  modUser
+);
 
-r.delete("/:id", validate, decodeJwt, delUser);
+r.delete(
+  "/:id",
+  validate,
+  decodeJwt,
+  guard(MNG_CODE.DEL_USER),
+  delUser
+);

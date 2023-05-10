@@ -1,7 +1,9 @@
 import {
   decodeJwt,
+  guard,
   validate,
 } from "@lxdgc9/pkg/dist/middie";
+import { MNG_CODE } from "@lxdgc9/pkg/dist/perm";
 import { Router } from "express";
 import { body, param } from "express-validator";
 import { Types } from "mongoose";
@@ -17,12 +19,18 @@ import { newPerm } from "../handler/role/perm/new";
 
 export const r = Router();
 
-r.get("/group", decodeJwt, getGroup);
+r.get(
+  "/group",
+  decodeJwt,
+  guard(MNG_CODE.GET_PERM),
+  getGroup
+);
 r.post(
   "/group",
   body("name").notEmpty(),
   validate,
   decodeJwt,
+  guard(MNG_CODE.NEW_PERM),
   newGroup
 );
 r.patch(
@@ -49,6 +57,7 @@ r.patch(
   ],
   validate,
   decodeJwt,
+  guard(MNG_CODE.MOD_PERM),
   modGroup
 );
 r.delete(
@@ -56,15 +65,17 @@ r.delete(
   param("id").isMongoId(),
   validate,
   decodeJwt,
+  guard(MNG_CODE.DEL_PERM),
   delGroup
 );
 
-r.get("/", decodeJwt, getPerms);
+r.get("/", decodeJwt, guard(MNG_CODE.GET_PERM), getPerms);
 r.get(
   "/:id",
   param("id").isMongoId(),
   validate,
   decodeJwt,
+  guard(MNG_CODE.GET_PERM),
   getPermById
 );
 r.post(
@@ -76,6 +87,7 @@ r.post(
   ],
   validate,
   decodeJwt,
+  guard(MNG_CODE.NEW_PERM),
   newPerm
 );
 r.patch(
@@ -91,6 +103,7 @@ r.patch(
   ],
   validate,
   decodeJwt,
+  guard(MNG_CODE.MOD_PERM),
   modPerm
 );
 r.delete(
@@ -98,5 +111,6 @@ r.delete(
   param("id").isMongoId(),
   validate,
   decodeJwt,
+  guard(MNG_CODE.DEL_PERM),
   delPerm
 );
