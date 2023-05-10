@@ -1,0 +1,24 @@
+export const MNG_CODE = {
+  GET_PERM: "GET_PERM",
+  NEW_PERM: "NEW_PEMR",
+  MOD_PERM: "MOD_PERM",
+  DEL_PERM: "DEL_PERM",
+
+  GET_ROLE: "GET_ROLE",
+  NEW_ROLE: "NEW_ROLE",
+  MOD_ROLE: "MOD_ROLE",
+  DEL_ROLE: "DEL_ROLE",
+
+  GET_USER: "GET_USER",
+  NEW_USER: "NEW_USER",
+  MOD_USER: "MOD_USER",
+  DEL_USER: "DEL_USER",
+};
+
+export const LOG_CODE = {
+  GET_LOG: "GET_LOG",
+};
+
+export const APP_CODE = {
+  COURSE: "COURSE",
+};

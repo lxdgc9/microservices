@@ -4,8 +4,10 @@ import {
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
+import { LogPublisher } from "../event/publisher/log";
 import { Role } from "../model/role";
 import { User } from "../model/user";
+import { nats } from "../nats";
 
 type Dto = {
   prof?: object;
@@ -39,6 +41,7 @@ export const modUser: RequestHandler = async (
       if (
         username &&
         (await User.findOne({
+          _id: { $ne: user._id },
           attrs: {
             $elemMatch: { k: "username", v: username },
           },
@@ -49,6 +52,7 @@ export const modUser: RequestHandler = async (
       if (
         phone &&
         (await User.findOne({
+          _id: { $ne: user._id },
           attrs: {
             $elemMatch: { k: "phone", v: phone },
           },
@@ -59,6 +63,7 @@ export const modUser: RequestHandler = async (
       if (
         email &&
         (await User.findOne({
+          _id: { $ne: user._id },
           attrs: {
             $elemMatch: { k: "email", v: email },
           },
@@ -74,6 +79,30 @@ export const modUser: RequestHandler = async (
         throw new BadReqErr("role doesn't exist");
       }
     }
+
+    const detail = await User.findByIdAndUpdate(user._id, {
+      $set: {
+        prof,
+        role: roleId,
+        active,
+      },
+    }).populate({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
+      },
+    });
+
+    res.json({ user: detail });
+
+    new LogPublisher(nats.cli).publish({
+      act: "MOD",
+      model: User.modelName,
+      doc: user,
+      actorId: req.user?.id,
+      status: true,
+    });
   } catch (e) {
     next(e);
   }

@@ -3,10 +3,10 @@
     "target": "es2017",
     "module": "commonjs",
     "strict": true,
-    "outDir": "dist",
     "declaration": true,
-    "skipLibCheck": true,
+    "outDir": "dist",
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
 }
