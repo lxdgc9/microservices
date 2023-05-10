@@ -10,8 +10,8 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc yarn
 
 COPY . ./
 
-RUN echo ${NODE_ENV} && if [ ${NODE_ENV} = "prod" ]; then yarn tsc; fi
+RUN if [ ${NODE_ENV} = "prod" ]; then yarn tsc; fi
 
 EXPOSE 3000
 
-CMD echo ${NODE_ENV} && if [ ${NODE_ENV} = "prod" ]; then yarn start; else yarn dev; fi
+CMD if [ ${NODE_ENV} = "prod" ]; then yarn start; else yarn dev; fi

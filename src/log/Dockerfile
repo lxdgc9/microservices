@@ -14,4 +14,4 @@ RUN if [ ${NODE_ENV} = "prod" ]; then yarn tsc; fi
 
 EXPOSE 3000
 
-CMD if [ "${NODE_ENV}" = "prod" ]; then yarn start; else yarn dev; fi
+CMD if [ ${NODE_ENV} = "prod" ]; then yarn start; else yarn dev; fi
