@@ -9,6 +9,7 @@ export const getLogs: RequestHandler = async (
   next
 ) => {
   try {
+    console.log("vlvlvl");
     const models = (
       await connection.db.listCollections().toArray()
     ).map((c) => c.name);

@@ -18,6 +18,7 @@ export const modUnit: RequestHandler = async (
   next
 ) => {
   const { code, name, addr, desc }: Dto = req.body;
+
   try {
     const unit = await Unit.findById(req.params.id);
     if (!unit) {
