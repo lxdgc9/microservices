@@ -6,6 +6,8 @@ services:
     ports:
       - 80:80
       - 443:443
+    volumes:
+    - ./nginx:/etc/nginx
     networks:
       - bridge
     depends_on:
@@ -45,7 +47,7 @@ services:
     build: 
       context: ./src/user
       args:
-        - NODE_ENV=prod
+        - NODE_ENV=dev
       secrets:
         - npmrc
     ports:
@@ -53,12 +55,14 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=prod
+      - NODE_ENV=dev
       - MONGO_URI=${MONGO_URI_USER_SRV}
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=user-srv
       - NATS_CLUSTER_ID=courseware
       - REDIS_URI=redis://cache:6379
+    volumes:
+      - ./src/user:/usr/app:rw
     networks:
       - bridge
     depends_on:
@@ -69,7 +73,7 @@ services:
     build: 
       context: ./src/course
       args:
-        - NODE_ENV=prod
+        - NODE_ENV=dev
       secrets:
         - npmrc
     ports:
@@ -77,11 +81,13 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=prod
+      - NODE_ENV=dev
       - MONGO_URI=${MONGO_URI_COURSE_SRV}
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=course-srv
       - NATS_CLUSTER_ID=courseware
+    volumes:
+      - ./src/course:/usr/app:rw
     networks:
       - bridge
     depends_on:
@@ -91,7 +97,7 @@ services:
     build: 
       context: ./src/log
       args:
-        - NODE_ENV=prod
+        - NODE_ENV=dev
       secrets:
         - npmrc
     ports:
@@ -99,11 +105,13 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=prod
+      - NODE_ENV=dev
       - MONGO_URI=${MONGO_URI_LOG_SRV}
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=log-srv
       - NATS_CLUSTER_ID=courseware
+    volumes:
+      - ./src/log:/usr/app:rw
     networks:
       - bridge
     depends_on:
