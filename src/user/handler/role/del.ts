@@ -23,7 +23,7 @@ export const delRole: RequestHandler = async (
       act: "DEL",
       model: Role.modelName,
       doc: role,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

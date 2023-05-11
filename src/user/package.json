@@ -8,7 +8,7 @@
     "dev": "nodemon index.ts"
   },
   "dependencies": {
-    "@lxdgc9/pkg": "^1.0.41",
+    "@lxdgc9/pkg": "^1.0.46",
     "bcryptjs": "^2.4.3",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",

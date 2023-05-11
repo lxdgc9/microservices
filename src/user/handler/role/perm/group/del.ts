@@ -26,7 +26,7 @@ export const delGroup: RequestHandler = async (
       act: "DEL",
       model: PermGr.modelName,
       doc: group,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

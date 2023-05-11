@@ -52,7 +52,7 @@ export const modRole: RequestHandler = async (
       act: "MOD",
       model: Role.modelName,
       doc: role,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

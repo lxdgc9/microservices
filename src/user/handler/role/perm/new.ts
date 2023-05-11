@@ -57,7 +57,7 @@ export const newPerm: RequestHandler = async (
       act: "NEW",
       model: Perm.modelName,
       doc: detail!,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

@@ -6,7 +6,7 @@ export interface Log {
   data: {
     act: "GET" | "NEW" | "MOD" | "DEL";
     doc?: Document;
-    actorId?: Types.ObjectId;
+    userId?: Types.ObjectId;
     model: string;
     status: boolean;
   };

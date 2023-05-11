@@ -61,7 +61,7 @@ export const modGroup: RequestHandler = async (
       act: "MOD",
       model: PermGr.modelName,
       doc: group,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

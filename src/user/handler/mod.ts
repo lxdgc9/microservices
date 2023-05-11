@@ -100,7 +100,7 @@ export const modUser: RequestHandler = async (
       act: "MOD",
       model: User.modelName,
       doc: user,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

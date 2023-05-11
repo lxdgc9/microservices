@@ -5,7 +5,7 @@ import {
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../event/publisher/log";
-import { NewUserPublisher } from "../event/publisher/new-user";
+import { NewUserPublisher } from "../event/publisher/user/new";
 import { Role } from "../model/role";
 import { User } from "../model/user";
 import { nats } from "../nats";
@@ -92,14 +92,12 @@ export const newUser: RequestHandler = async (
 
     res.status(201).json({ user: detail });
 
-    new NewUserPublisher(nats.cli).publish({
-      actor: detail!,
-    });
+    new NewUserPublisher(nats.cli).publish(detail!);
     new LogPublisher(nats.cli).publish({
       act: "NEW",
       model: User.modelName,
       doc: detail!,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

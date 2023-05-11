@@ -17,7 +17,7 @@ export const newGroup: RequestHandler = async (
       act: "NEW",
       model: PermGr.modelName,
       doc: group,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
     res.json({ group });

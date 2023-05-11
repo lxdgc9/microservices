@@ -43,7 +43,7 @@ export const newRole: RequestHandler = async (
       act: "NEW",
       model: Role.modelName,
       doc: detail!,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

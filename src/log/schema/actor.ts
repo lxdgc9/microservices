@@ -9,6 +9,7 @@ export const schema = new Schema<IActor>(
     act: {
       type: Schema.Types.ObjectId,
       required: true,
+      unique: true,
     },
     obj: {
       type: Schema.Types.Mixed,

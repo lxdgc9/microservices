@@ -76,7 +76,7 @@ export const modPerm: RequestHandler = async (
       act: "MOD",
       model: Perm.modelName,
       doc: perm,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {

@@ -28,7 +28,7 @@ export const delPerm: RequestHandler = async (
       act: "DEL",
       model: Perm.modelName,
       doc: perm,
-      actorId: req.user?.id,
+      userId: req.user?.id,
       status: true,
     });
   } catch (e) {
