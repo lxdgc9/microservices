@@ -80,13 +80,22 @@ export const modUser: RequestHandler = async (
       }
     }
 
-    const detail = await User.findByIdAndUpdate(user._id, {
-      $set: {
-        prof,
-        role: roleId,
-        active,
+    const detail = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: {
+          attrs: Object.entries(prof || {}).map(
+            ([k, v]) => ({
+              k,
+              v,
+            })
+          ),
+          role: roleId,
+          active,
+        },
       },
-    }).populate({
+      { new: true }
+    ).populate({
       path: "role",
       populate: {
         path: "perms",
