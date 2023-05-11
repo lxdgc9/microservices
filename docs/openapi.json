@@ -1,0 +1,330 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API HỆ THỐNG NỘI BỘ ITT",
+    "description": "Đặc tả API nội bộ của hệ thống",
+    "termsOfService": "http://swagger.io/terms/",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "sandbox"
+    },
+    {
+      "url": "http://hldt.iit.vn",
+      "description": "prod"
+    }
+  ],
+  "tags": [
+    {
+      "name": "User",
+      "description": "Các api liên quan đến người dùng"
+    },
+    {
+      "name": "Log",
+      "description": "Các api liên quan đến xem log của hệ thống"
+    },
+    {
+      "name": "Course",
+      "description": "Các api liên quan đến phần mềm học liệu điển tử"
+    }
+  ],
+  "paths": {
+    "/api/users/auth": {
+      "post": {
+        "description": "Đăng nhập tài khoản",
+        "tags": ["User"],
+        "operationId": "login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Pet"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Lỗi đầu vào"
+          },
+          "401": {
+            "description": "Lỗi đăng nhập",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "description": "Lấy danh sách người dùng (Yêu cầu token và người dùng phải có permission của route này mới được truy cập)",
+        "tags": ["User"],
+        "operationId": "getUsers",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy danh sách thành công"
+          },
+          "400": {
+            "description": "Lỗi đầu vào",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Lỗi liên quan đến token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Tạo người dùng (Yêu cầu token và người dùng phải có permission của route này mới được truy cập)",
+        "operationId": "newUser",
+        "tags": ["User"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Thông tin người dùng cần tạo",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPet"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "get": {
+        "description": "Returns a user based on a single ID, if the user does not have access to the pet",
+        "operationId": "find pet by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to fetch",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "pet response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pet"
+                },
+                "example": {
+                  "id": 1,
+                  "name": "doggie",
+                  "tag": "dog"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "deletes a single pet based on the ID supplied",
+        "operationId": "deletePet",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of pet to delete",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "pet deleted"
+          },
+          "default": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Credentials": {
+        "required": ["k", "v", "passwd"],
+        "properties": {
+          "k": {
+            "type": "string",
+            "enum": ["username", "phone", "email"],
+            "default": "username",
+            "description": "Phương thức đăng nhập"
+          },
+          "v": {
+            "type": "string",
+            "default": "admin",
+            "description": "Tên tài khoản"
+          },
+          "passwd": {
+            "type": "string",
+            "default": "123456"
+          }
+        }
+      },
+      "NewUser": {
+        "required": ["k", "v", "passwd"],
+        "properties": {
+          "k": {
+            "type": "string",
+            "enum": ["username", "phone", "email"],
+            "default": "username",
+            "description": "Phương thức đăng nhập"
+          },
+          "v": {
+            "type": "string",
+            "default": "admin",
+            "description": "Tên tài khoản"
+          },
+          "passwd": {
+            "type": "string",
+            "default": "123456"
+          }
+        }
+      },
+      "NewPet": {
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "required": ["msg"],
+        "properties": {
+          "msg": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
