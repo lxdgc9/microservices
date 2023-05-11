@@ -10,13 +10,8 @@ export class NewUserListener extends Listener<NewUser> {
 
   async onMsg(data: NewUser["data"], msg: Message) {
     const newUser = new User({
-      ...data,
       userId: data.id,
-      role: (
-        data as unknown as {
-          role: { name: string };
-        }
-      ).role.name,
+      obj: data,
     });
     newUser.save();
 

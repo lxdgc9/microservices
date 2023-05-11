@@ -9,7 +9,7 @@ export class ModUserListener extends Listener<DelUser> {
   qGroup = qGroup;
 
   async onMsg(data: DelUser["data"], msg: Message) {
-    await Actor.findByIdAndDelete(data);
+    await Actor.findOneAndDelete({ userId: data.id });
 
     msg.ack();
   }

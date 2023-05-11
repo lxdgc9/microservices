@@ -27,21 +27,21 @@ services:
       "2", 
       "-SD", 
       "-cid", 
-      "courseware"
+      "nats_clus"
     ]
     ports:
       - 4222
       - 8222
     networks:
       - bridge
-  cache:
+  redis:
     image: redis:alpine
     ports:
-      - 6379:6379
+      - 6379
     networks:
       - bridge
   user:
-    image: gdvn/courseware-user
+    image: sys/user
     build: 
       context: ./src/user
       args:
@@ -49,23 +49,23 @@ services:
       secrets:
         - npmrc
     ports:
-      - 3000:3000
+      - 3000
     env_file:
       - .env
     environment:
       - NODE_ENV=prod
       - MONGO_URI=${MONGO_URI_USER_SRV}
       - NATS_URL=http://nats:4222
-      - NATS_CLIENT_ID=user-srv
-      - NATS_CLUSTER_ID=courseware
-      - REDIS_URI=redis://cache:6379
+      - NATS_CLIENT_ID=nats-cli_user
+      - NATS_CLUSTER_ID=nats_clus
+      - REDIS_URI=redis://redis:6379
     networks:
       - bridge
     depends_on:
       - nats
-      - cache
+      - redis
   course:
-    image: gdvn/courseware-course
+    image: sys/course
     build: 
       context: ./src/course
       args:
@@ -73,21 +73,21 @@ services:
       secrets:
         - npmrc
     ports:
-      - 3001:3000
+      - 3000
     env_file:
       - .env
     environment:
       - NODE_ENV=prod
       - MONGO_URI=${MONGO_URI_COURSE_SRV}
       - NATS_URL=http://nats:4222
-      - NATS_CLIENT_ID=course-srv
-      - NATS_CLUSTER_ID=courseware
+      - NATS_CLIENT_ID=nats-cli_course
+      - NATS_CLUSTER_ID=nats_clus
     networks:
       - bridge
     depends_on:
       - nats
   log:
-    image: gdvn/courseware-log
+    image: sys/log
     build: 
       context: ./src/log
       args:
@@ -95,15 +95,15 @@ services:
       secrets:
         - npmrc
     ports:
-      - 3002:3000
+      - 3000
     env_file:
       - .env
     environment:
       - NODE_ENV=prod
       - MONGO_URI=${MONGO_URI_LOG_SRV}
       - NATS_URL=http://nats:4222
-      - NATS_CLIENT_ID=log-srv
-      - NATS_CLUSTER_ID=courseware
+      - NATS_CLIENT_ID=nats-cli_log
+      - NATS_CLUSTER_ID=nats_clus
     networks:
       - bridge
     depends_on:

@@ -9,17 +9,12 @@ export class ModUserListener extends Listener<ModUser> {
   qGroup = qGroup;
 
   async onMsg(data: ModUser["data"], msg: Message) {
-    console.log(data.id);
-    console.log(data);
-
-    await Actor.findByIdAndUpdate(data.id, {
-      ...data,
-      role: (
-        data as unknown as {
-          role: { name: string };
-        }
-      ).role.name,
-    });
+    await Actor.findOneAndUpdate(
+      { userId: data.id },
+      {
+        $set: { obj: data },
+      }
+    );
 
     msg.ack();
   }

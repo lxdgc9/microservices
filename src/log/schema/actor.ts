@@ -1,12 +1,12 @@
 import { Schema, Types } from "mongoose";
 
 export interface IActor {
-  act: Types.ObjectId;
+  userId: Types.ObjectId;
   obj: any;
 }
 export const schema = new Schema<IActor>(
   {
-    act: {
+    userId: {
       type: Schema.Types.ObjectId,
       required: true,
       unique: true,

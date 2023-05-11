@@ -17,8 +17,6 @@ import { refreshTkn } from "../handler/refresh-tkn";
 
 export const r = Router();
 
-console.log(MNG_CODE.GET_USER);
-
 r.get("/", decodeJwt, guard(MNG_CODE.GET_USER), getUsers);
 
 r.get(
