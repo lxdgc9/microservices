@@ -107,7 +107,6 @@ export const modUser: RequestHandler = async (
     res.json({ user: detail });
 
     new ModUserPublisher(nats.cli).publish(detail!);
-
     new LogPublisher(nats.cli).publish({
       act: "MOD",
       model: User.modelName,
