@@ -86,6 +86,16 @@ r.patch(
 
 r.patch(
   "/:id",
+  [
+    param("id").isMongoId(),
+    body("prof").optional({ values: "falsy" }).isObject(),
+    body("roleId")
+      .optional({ values: "falsy" })
+      .isMongoId(),
+    body("active")
+      .optional({ values: "falsy" })
+      .isBoolean(),
+  ],
   validate,
   decodeJwt,
   guard(MNG_CODE.MOD_USER),
@@ -94,6 +104,7 @@ r.patch(
 
 r.delete(
   "/:id",
+  param("id").isMongoId(),
   validate,
   decodeJwt,
   guard(MNG_CODE.DEL_USER),
