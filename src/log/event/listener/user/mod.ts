@@ -9,6 +9,9 @@ export class ModUserListener extends Listener<ModUser> {
   qGroup = qGroup;
 
   async onMsg(data: ModUser["data"], msg: Message) {
+    console.log(data.id);
+    console.log(data);
+
     await Actor.findByIdAndUpdate(data.id, {
       ...data,
       role: (
