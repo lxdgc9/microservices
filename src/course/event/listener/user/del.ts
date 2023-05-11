@@ -4,7 +4,7 @@ import { Message } from "node-nats-streaming";
 import { User } from "../../../model/user";
 import { qGroup } from "../qgroup";
 
-export class ModUserListener extends Listener<DelUser> {
+export class DelUserListener extends Listener<DelUser> {
   subject: Subject.DEL_USER = Subject.DEL_USER;
   qGroup = qGroup;
 

@@ -1,5 +1,7 @@
 import { connect } from "mongoose";
 import { app } from "./app";
+import { DelUserListener } from "./event/listener/user/del";
+import { ModUserListener } from "./event/listener/user/mod";
 import { NewUserListener } from "./event/listener/user/new";
 import { nats } from "./nats";
 
@@ -39,6 +41,8 @@ import { nats } from "./nats";
     process.on("SIGTERM", () => nats.cli.close());
 
     new NewUserListener(nats.cli).listen();
+    new ModUserListener(nats.cli).listen();
+    new DelUserListener(nats.cli).listen();
 
     connect(process.env.MONGO_URI);
     console.log("Connected to MongoDb");
