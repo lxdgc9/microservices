@@ -5,6 +5,7 @@ import {
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../event/publisher/log";
+import { ModUserPublisher } from "../event/publisher/user/mod";
 import { Role } from "../model/role";
 import { User } from "../model/user";
 import { nats } from "../nats";
@@ -104,6 +105,8 @@ export const modUser: RequestHandler = async (
     });
 
     res.json({ user: detail });
+
+    new ModUserPublisher(nats.cli).publish(user);
 
     new LogPublisher(nats.cli).publish({
       act: "MOD",
