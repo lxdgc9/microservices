@@ -37,7 +37,7 @@
   "paths": {
     "/api/users/auth": {
       "post": {
-        "description": "Đăng nhập tài khoản",
+        "summary": "Đăng nhập",
         "tags": ["User"],
         "operationId": "login",
         "requestBody": {
@@ -45,24 +45,31 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Credentials"
+                "required": ["k", "v", "passwd"],
+                "properties": {
+                  "k": {
+                    "type": "string",
+                    "enum": ["username", "phone", "email"],
+                    "default": "username",
+                    "description": "Phương thức đăng nhập"
+                  },
+                  "v": {
+                    "type": "string",
+                    "default": "admin",
+                    "description": "Tên tài khoản"
+                  },
+                  "passwd": {
+                    "type": "string",
+                    "default": "123456"
+                  }
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Đăng nhập thành công",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Pet"
-                  }
-                }
-              }
-            }
+            "description": "Đăng nhập thành công"
           },
           "400": {
             "description": "Lỗi đầu vào"
@@ -76,6 +83,45 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/auth/refresh-token": {
+      "post": {
+        "description": "Lấy accessToken mới",
+        "tags": ["User"],
+        "operationId": "refreshToken",
+        "requestBody": {
+          "description": "Gửi refreshToken",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshToken"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Làm mới thành công"
+          },
+          "400": {
+            "description": "Lỗi đầu vào"
+          },
+          "401": {
+            "description": "Lỗi không thể refresh token, hãy đăng nhập lại"
           },
           "500": {
             "description": "Lỗi không mong muốn",
@@ -151,7 +197,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPet"
+                "$ref": "#/components/schemas/NewUser"
               }
             }
           }
@@ -167,7 +213,10 @@
               }
             }
           },
-          "default": {
+          "409": {
+            "description": "Lỗi trùng thông tin tài khoản"
+          },
+          "500": {
             "description": "unexpected error",
             "content": {
               "application/json": {
@@ -180,15 +229,21 @@
         }
       }
     },
-    "/pets/{id}": {
+    "/api/users/{id}": {
       "get": {
-        "description": "Returns a user based on a single ID, if the user does not have access to the pet",
-        "operationId": "find pet by id",
+        "description": "Lấy thông tin user theo id (Yêu cầu token và người dùng phải có permission của route này)",
+        "operationId": "getUser",
+        "tags": ["User"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of pet to fetch",
+            "description": "Id của người dùng",
             "required": true,
             "schema": {
               "type": "integer",
@@ -198,22 +253,67 @@
         ],
         "responses": {
           "200": {
-            "description": "pet response",
+            "description": "Làm mới thành công"
+          },
+          "400": {
+            "description": "Lỗi đầu vào"
+          },
+          "401": {
+            "description": "Lỗi không thể refresh token, hãy đăng nhập lại"
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Pet"
-                },
-                "example": {
-                  "id": 1,
-                  "name": "doggie",
-                  "tag": "dog"
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
+          }
+        }
+      },
+      "patch": {
+        "description": "Chỉnh sửa thông tin người dùng",
+        "operationId": "modUser",
+        "tags": ["User"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id của người dùng",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "6459f32a251e4db1b1407137"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Thông tin người dùng cần chỉnh sửa",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Chỉnh sửa người dùng theo id"
           },
-          "default": {
-            "description": "unexpected error",
+          "400": {
+            "description": "Lỗi đầu vào"
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
             "content": {
               "application/json": {
                 "schema": {
@@ -225,26 +325,47 @@
         }
       },
       "delete": {
-        "description": "deletes a single pet based on the ID supplied",
-        "operationId": "deletePet",
+        "description": "Xóa người dùng theo id",
+        "operationId": "delUser",
+        "tags": ["User"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of pet to delete",
+            "description": "Id của người dùng",
             "required": true,
             "schema": {
               "type": "integer",
-              "format": "int64"
+              "format": "int64",
+              "default": "64190b55242d2d667a1e7a37"
             }
           }
         ],
+        "requestBody": {
+          "description": "Thông tin người dùng cần chỉnh sửa",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModUser"
+              }
+            }
+          }
+        },
         "responses": {
-          "204": {
-            "description": "pet deleted"
+          "200": {
+            "description": "Chỉnh sửa người dùng theo id"
           },
-          "default": {
-            "description": "unexpected error",
+          "400": {
+            "description": "Lỗi đầu vào"
+          },
+          "500": {
+            "description": "Lỗi không mong muốn",
             "content": {
               "application/json": {
                 "schema": {
@@ -286,34 +407,97 @@
           }
         }
       },
-      "NewUser": {
-        "required": ["k", "v", "passwd"],
+      "RefreshToken": {
+        "required": ["token"],
         "properties": {
-          "k": {
+          "token": {
             "type": "string",
-            "enum": ["username", "phone", "email"],
-            "default": "username",
-            "description": "Phương thức đăng nhập"
-          },
-          "v": {
-            "type": "string",
-            "default": "admin",
-            "description": "Tên tài khoản"
-          },
-          "passwd": {
-            "type": "string",
-            "default": "123456"
+            "default": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NThjM2NkMWM5YTA5MDk0NzM0MWYxOCIsInBlcm1zIjpbIkdFVF9QRVJNIiwiTkVXX1BFUk0iLCJNT0RfUEVSTSIsIkRFTF9QRVJNIiwiQ09VUlNFIiwiR0VUX1JPTEUiLCJORVdfUk9MRSIsIk1PRF9ST0xFIiwiREVMX1JPTEUiLCJERUxfVVNFUiIsIk1PRF9VU0VSIiwiTkVXX1VTRVIiLCJHRVRfVVNFUiIsIkdFVF9MT0ciXSwiaWF0IjoxNjgzODY0NTMyLCJleHAiOjE3MjAxNTI1MzJ9.rpN9MDZubrp37scZosKG54bdWchD9WaytlHhsUa-reg"
           }
         }
       },
-      "NewPet": {
-        "required": ["name"],
+      "NewUser": {
+        "required": ["prof", "passwd", "roleId"],
         "properties": {
-          "name": {
-            "type": "string"
+          "prof": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "default": "user01"
+              },
+              "phone": {
+                "type": "string",
+                "default": "0123456789"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "default": "user01@gmail.com"
+              },
+              "gender": {
+                "type": "string",
+                "default": "Nam"
+              }
+            },
+            "description": "Thông tin người dùng cần tạo"
           },
-          "tag": {
-            "type": "string"
+          "passwd": {
+            "type": "string",
+            "default": "123456",
+            "description": "Mật khẩu"
+          },
+          "roleId": {
+            "type": "string",
+            "default": "6458c0eb1f3ab26ae3b21d5d",
+            "description": "Vai trò người dùng cần tạo"
+          },
+          "active": {
+            "type": "boolean",
+            "default": false,
+            "description": "Trạng thái khả dụng của tài khoản khi tạo"
+          }
+        }
+      },
+      "ModUser": {
+        "properties": {
+          "prof": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "default": "user01"
+              },
+              "phone": {
+                "type": "string",
+                "default": "0123456789"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "default": "user01@gmail.com"
+              },
+              "gender": {
+                "type": "string",
+                "default": "Nam"
+              }
+            },
+            "description": "Thông tin người dùng cần tạo"
+          },
+          "passwd": {
+            "type": "string",
+            "default": "123456",
+            "description": "Mật khẩu"
+          },
+          "roleId": {
+            "type": "string",
+            "default": "63fc14c5463b6ff23216fb75",
+            "description": "Vai trò người dùng cần tạo"
+          },
+          "active": {
+            "type": "boolean",
+            "default": false,
+            "description": "Trạng thái khả dụng của tài khoản khi tạo"
           }
         }
       },

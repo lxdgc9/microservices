@@ -1,0 +1,307 @@
+openapi: 3.0.0
+info:
+  title: API HỆ THỐNG
+  description: "Api dành cho hệ thống với nhiều service làm việc cùng nhau như: chat, hldt, ..."
+  version: "1.0.0"
+  license:
+    name: Apache 2.0
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+servers:
+  - description: Sandbox
+    url: http://localhost/api
+  - description: Production
+    url: http://hldt.iit.vn
+tags:
+  - name: Auth
+    description: Xác thực
+  - name: User
+  - name: Role & Permission
+    description: Vai trò & quyền hạn
+  - name: Log
+paths:
+  /users/auth:
+    post:
+      tags:
+        - Auth
+      summary: Đăng nhập
+      operationId: login
+  /users/refresh-token:
+    post:
+      tags:
+        - Auth
+      summary: Refresh token
+      operationId: refreshTkn
+  /users:
+    get:
+      tags:
+        - User
+      summary: Tìm kiếm danh sách người dùng
+      operationId: getUsers
+      description: |
+        Tìm kiếm danh sách người dùng của hệ thống bao gồm: tên, vai trò và 
+        quyền hạn của người dùng
+      responses:
+        "200":
+          description: trả về thành công
+        "401":
+          description: lỗi xác thực
+        "500":
+          description: lỗi ngoài ý muốn
+    post:
+      tags:
+        - User
+      summary: Tạo người dùng
+      operationId: newUser
+      responses:
+        "201":
+          description: tạo thành công
+        "400":
+          description: lỗi đầu vào
+        "409":
+          description: item đã tồn tại trong hệ thống
+        "500":
+          description: lỗi ngoài ý muốn
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewUser"
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: Tìm kiếm người dùng
+      operationId: getUser
+      parameters:
+        - name: id
+          in: query
+          description: ID người dùng
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: trả về thành công
+        "401":
+          description: lỗi xác thực
+        "404":
+          description: không tìm thấy
+        "500":
+          description: lỗi ngoài ý muốn
+    patch:
+      tags:
+        - User
+      summary: Chỉnh sửa thông tin người dùng
+      operationId: modUser
+      parameters:
+        - name: id
+          in: query
+          description: ID người dùng
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: trả về thành công
+        "401":
+          description: lỗi xác thực
+        "404":
+          description: không tìm thấy
+        "500":
+          description: lỗi ngoài ý muốn
+    delete:
+      tags:
+        - User
+      summary: Xóa người dùng
+      operationId: delUser
+      parameters:
+        - name: id
+          in: query
+          description: ID người dùng
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: trả về thành công
+        "401":
+          description: lỗi xác thực
+        "404":
+          description: không tìm thấy
+        "500":
+          description: lỗi ngoài ý muốn
+  /users/{id}/passwd:
+    patch:
+      tags:
+        - User
+      summary: Đổi mật khẩu
+      operationId: modPasswd
+      parameters:
+        - name: id
+          in: query
+          description: ID người dùng
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: trả về thành công
+        "401":
+          description: lỗi xác thực
+        "404":
+          description: không tìm thấy
+        "500":
+          description: lỗi ngoài ý muốn
+  /roles:
+    get:
+      tags:
+        - Role & Permission
+      summary: Danh sách vai trò
+      operationId: getRoles
+    post:
+      tags:
+        - Role & Permission
+      summary: Tạo vai trò mới
+      operationId: getRoles
+      description: |
+        Vai trò mới có nhiệm vụ nhóm các quyền hạn lại với nhau
+  /roles/{id}:
+    get:
+      tags:
+        - Role & Permission
+      summary: Lấy chi tiết thông tin vai trò
+      operationId: getRole
+    patch:
+      tags:
+        - Role & Permission
+      summary: Cập nhật vai trò
+      operationId: modRole
+      description: |
+        Cập nhật tên hoặc danh sách quyền hạn của vai trò hiện tại
+    delete:
+      tags:
+        - Role & Permission
+      summary: Xóa vai trò
+      operationId: delRole
+  /roles/perms:
+    get:
+      tags:
+        - Role & Permission
+      summary: Lấy danh sách quyền hạn
+      operationId: getPerms
+      description: |
+        Danh sách quyền hạn được phân theo danh mục
+    post:
+      tags:
+        - Role & Permission
+      summary: Tạo mới quyền hạn
+      operationId: newPerm
+      description: |
+        Cập nhật tên hoặc danh sách quyền hạn của vai trò hiện tại
+  /roles/perms/{id}:
+    get:
+      tags:
+        - Role & Permission
+      summary: Chi tiết quyền hạn
+      operationId: getPerms
+      description: |
+        Chi tiết quyền hạn gồm mã quyền hạn và nhóm quyền
+    patch:
+      tags:
+        - Role & Permission
+      summary: Chỉnh sửa quyền hạn
+      operationId: modPerm
+      description: |
+        Cập nhật thông tin quyền hạn
+    delete:
+      tags:
+        - Role & Permission
+      summary: Xóa quyền hạn
+      operationId: delPerm
+  /roles/perms/group:
+    get:
+      tags:
+        - Role & Permission
+      summary: Lấy danh sách danh mục quyền hạn
+      operationId: getPermGr
+      description: |
+        Danh mục quyền hạn gom nhóm các quyền lại với nhau
+        giúp trực quan khi lấy danh sách
+    post:
+      tags:
+        - Role & Permission
+      summary: Tạo mới danh mục quyền hạn
+      operationId: newPermGr
+  /roles/perms/group/{id}:
+    get:
+      tags:
+        - Role & Permission
+      summary: Lấy danh sách danh mục quyền hạn
+      operationId: getPermGr
+      description: |
+        Danh mục quyền hạn gom nhóm các quyền lại với nhau
+        giúp trực quan khi lấy danh sách
+    patch:
+      tags:
+        - Role & Permission
+      summary: Tạo mới danh mục quyền hạn
+      operationId: modPermGr
+    delete:
+      tags:
+        - Role & Permission
+      summary: Tạo mới danh mục quyền hạn
+      operationId: delPermGr
+  /logs/{srv}:
+    get:
+      tags:
+        - Log
+      summary: Lấy lịch sử ghi log theo tên service
+      operationId: getLogByModel
+
+components:
+  schemas:
+    NewUser:
+      type: object
+      required:
+        - prof
+        - passwd
+        - roleId
+      properties:
+        prof:
+          type: object
+
+          properties:
+            username:
+              type: string
+              example: giaovien
+            phone:
+              type: string
+              example: 0123123123
+            email:
+              type: string
+              format: email
+              example: "giaovien@gmail.com"
+            gender:
+              type: string
+              example: Nữ
+        passwd:
+          type: string
+          example: 123456
+        roleId:
+          type: string
+          example: "6458c0eb1f3ab26ae3b21d5d"
+    Manufacturer:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: ACME Corporation
+        homePage:
+          type: string
+          format: url
+          example: "https://www.acme-corp.com"
+        phone:
+          type: string
+          example: 408-867-5309
+      type: object

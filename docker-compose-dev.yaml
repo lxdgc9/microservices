@@ -7,9 +7,9 @@ services:
       - 8080
     environment:
       BASE_URL: /docs
-      SWAGGER_JSON: /openapi.json
+      SWAGGER_JSON: /api.yaml
     volumes:
-      - ./docs/openapi.json:/openapi.json
+      - ./docs/api.yaml:/api.yaml
     networks:
       - bridge
   nginx:
