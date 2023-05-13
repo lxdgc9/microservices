@@ -8,7 +8,6 @@ export const getLogs: RequestHandler = async (
   res,
   next
 ) => {
-  console.log("hello world");
   try {
     const srvs = (
       await connection.db.listCollections().toArray()
