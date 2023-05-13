@@ -1,7 +1,18 @@
 version: "3"
 
 services:
+  swagger:
+    image: sys/swagger
+    build: ./docs
+    ports:
+      - 8080
+    environment:
+      BASE_URL: /docs
+      SWAGGER_JSON: /api.yaml
+    networks:
+      - bridge
   nginx:
+    image: sys/nginx
     build: ./nginx
     ports:
       - 80:80
@@ -9,6 +20,7 @@ services:
     networks:
       - bridge
     depends_on:
+      - swagger
       - nats
       - user
       - log

@@ -2,7 +2,8 @@ version: "3"
 
 services:
   swagger:
-    image: swaggerapi/swagger-ui
+    build: ./docs
+    image: sys/docs
     ports:
       - 8080
     environment:
