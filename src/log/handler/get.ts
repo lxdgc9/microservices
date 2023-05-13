@@ -8,22 +8,23 @@ export const getLogs: RequestHandler = async (
   res,
   next
 ) => {
+  console.log("hello world");
   try {
-    console.log("vlvlvl");
-    const models = (
+    const srvs = (
       await connection.db.listCollections().toArray()
     ).map((c) => c.name);
-    if (!models.includes(req.params.model)) {
-      throw new BadReqErr("model doesn't exist");
+    if (!srvs.includes(req.params.srv)) {
+      throw new BadReqErr("service doesn't exist");
     }
 
-    const log = await model(req.params.model, schema)
-      .find()
-      .populate({
-        path: "actor",
-        select: "obj",
-      });
-    res.json({ log });
+    res.json({
+      log: await model(req.params.srv, schema)
+        .find()
+        .populate({
+          path: "actor",
+          select: "obj",
+        }),
+    });
   } catch (e) {
     next(e);
   }

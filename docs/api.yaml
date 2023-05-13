@@ -251,6 +251,12 @@ paths:
         - Role & Permission
       summary: Tạo mới danh mục quyền hạn
       operationId: delPermGr
+  /logs/srvs:
+    get:
+      tags:
+        - Log
+      summary: Lấy danh sách tên các service của log
+      operationId: getServiceLog
   /logs/{srv}:
     get:
       tags:
