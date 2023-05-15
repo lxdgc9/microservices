@@ -18,6 +18,8 @@ tags:
   - name: Role & Permission
     description: Vai trò & quyền hạn
   - name: Log
+  - name: Course
+    description: Học liệu điện tử
 paths:
   /users/auth:
     post:
@@ -25,6 +27,18 @@ paths:
         - Auth
       summary: Đăng nhập
       operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+      responses:
+        "200":
+          description: đăng nhập thành công
+        "401":
+          description: lỗi đăng nhập
+        "500":
+          description: lỗi ngoài ý muốn
   /users/refresh-token:
     post:
       tags:
@@ -263,9 +277,43 @@ paths:
         - Log
       summary: Lấy lịch sử ghi log theo tên service
       operationId: getLogByModel
+  /courses/units:
+    get:
+      tags:
+        - Course
+      summary: Lấy danh sách đơn vị (trường)
+      operationId: getUnits
+      responses:
+        "200":
+          description: đăng nhập thành công
+        "401":
+          description: lỗi xác thực từ token
+        "403":
+          description: không có quyền hạn truy cập
+        "500":
+          description: lỗi ngoài ý muốn
 
 components:
   schemas:
+    Login:
+      type: object
+      required:
+        - k
+        - v
+        - passwd
+      properties:
+        k:
+          type: string
+          description: Phương thức đăng nhập
+          example: username
+        v:
+          type: string
+          description: Tài khoản
+          example: giaovien
+        passwd:
+          type: string
+          description: Mật khẩu
+          example: 123456
     NewUser:
       type: object
       required:

@@ -37,7 +37,7 @@ export const login: RequestHandler = async (
       },
     });
     if (!user) {
-      throw new UnauthorizedErr("user not found");
+      throw new UnauthorizedErr("user doesn't exist");
     }
 
     const isMatch = await compare(passwd, user.passwd);
@@ -45,18 +45,17 @@ export const login: RequestHandler = async (
       throw new UnauthorizedErr("wrong password");
     }
 
-    const payload = {
-      id: user._id,
-      perms: user.role.perms.map((p) => p.code),
-      active: user.active,
-    };
     const accessToken = sign(
-      payload,
+      {
+        id: user._id,
+        perms: user.role.perms.map((p) => p.code),
+        active: user.active,
+      },
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
     const refreshToken = sign(
-      payload,
+      { id: user._id },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: 36288000 }
     );
@@ -67,11 +66,9 @@ export const login: RequestHandler = async (
       refreshToken,
     });
 
-    await redis.set(
-      `rf-tkn.${payload.id.toString()}`,
-      refreshToken,
-      { EX: 36288001 }
-    );
+    await redis.set(`rf-tkn.${user._id}`, refreshToken, {
+      EX: 36288001,
+    });
   } catch (e) {
     next(e);
   }

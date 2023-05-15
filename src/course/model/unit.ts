@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-interface ISchl {
+interface IUnit {
   code: string;
   name: string;
   addr?: string;
@@ -8,7 +8,7 @@ interface ISchl {
   logo?: string;
 }
 
-const schema = new Schema<ISchl>(
+const schema = new Schema<IUnit>(
   {
     code: {
       type: String,
@@ -41,4 +41,4 @@ const schema = new Schema<ISchl>(
   }
 );
 
-export const Schl = model<ISchl>("schl", schema);
+export const Unit = model<IUnit>("unit", schema);

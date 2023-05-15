@@ -41,6 +41,8 @@ export function guard(...perms: string[]) {
       if (!req.user.perms.some((p) => perms.includes(p))) {
         throw new ForbiddenErr("permission denied");
       }
+
+      next();
     } catch (e) {
       next(e);
     }

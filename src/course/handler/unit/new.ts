@@ -1,6 +1,6 @@
 import { ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { Schl } from "../../model/schl";
+import { Unit } from "../../model/unit";
 
 type Dto = {
   code: string;
@@ -17,12 +17,12 @@ export const newUnit: RequestHandler = async (
   const { code, name, addr, desc }: Dto = req.body;
 
   try {
-    const unit = await Schl.findOne({ code });
+    const unit = await Unit.findOne({ code });
     if (unit) {
       throw new ConflictErr("duplicate unit");
     }
 
-    const newUnit = new Schl({
+    const newUnit = new Unit({
       code,
       name,
       addr,
@@ -30,7 +30,7 @@ export const newUnit: RequestHandler = async (
     });
     await newUnit.save();
 
-    res.json({ unit: newUnit });
+    res.status(201).json({ unit: newUnit });
   } catch (e) {
     next(e);
   }

@@ -1,6 +1,6 @@
 export const MNG_CODE = {
   GET_PERM: "GET_PERM",
-  NEW_PERM: "NEW_PEMR",
+  NEW_PERM: "NEW_PERM",
   MOD_PERM: "MOD_PERM",
   DEL_PERM: "DEL_PERM",
 
@@ -21,4 +21,16 @@ export const LOG_CODE = {
 
 export const APP_CODE = {
   COURSE: "COURSE",
+};
+
+export const COURSE_CODE = {
+  GET_UNIT: "GET_UNIT",
+  NEW_UNIT: "NEW_UNIT",
+  MOD_UNIT: "MOD_UNIT",
+  DEL_UNIT: "DEL_UNIT",
+
+  GET_CLASS: "GET_CLASS",
+  NEW_CLASS: "NEW_CLASS",
+  MOD_CLASS: "MOD_CLASS",
+  DEL_CLASS: "DEL_CLASS",
 };

@@ -2,6 +2,7 @@ import { UnauthorizedErr } from "@lxdgc9/pkg/dist/err";
 import { JwtPayload } from "@lxdgc9/pkg/dist/middie";
 import { RequestHandler } from "express";
 import { sign, verify } from "jsonwebtoken";
+import { User } from "../model/user";
 import { redis } from "../redis";
 
 export const refreshTkn: RequestHandler = async (
@@ -12,7 +13,7 @@ export const refreshTkn: RequestHandler = async (
   const { token }: { token: string } = req.body;
 
   try {
-    const { id, perms } = verify(
+    const { id } = verify(
       token,
       process.env.REFRESH_TOKEN_SECRET!
     ) as JwtPayload;
@@ -23,13 +24,34 @@ export const refreshTkn: RequestHandler = async (
       );
     }
 
+    const user = await User.findById(id).populate<{
+      role: {
+        perms: {
+          code: string;
+        }[];
+      };
+    }>({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
+      },
+    });
+    if (!user) {
+      throw new UnauthorizedErr("user doesn't exist");
+    }
+
     const accessToken = sign(
-      { id, perms },
+      {
+        id: user._id,
+        perms: user.role.perms.map((p) => p.code),
+        active: user.active,
+      },
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
     const refreshToken = sign(
-      { id, perms },
+      { id: user._id },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: 36288000 }
     );

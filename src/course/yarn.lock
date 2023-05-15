@@ -27,10 +27,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@lxdgc9/pkg@^1.0.48":
-  version "1.0.48"
-  resolved "https://npm.pkg.github.com/download/@lxdgc9/pkg/1.0.48/c66342a12af2cc1227f573888fe3d6e5e97ba1b6#c66342a12af2cc1227f573888fe3d6e5e97ba1b6"
-  integrity sha512-D0MY8PxylAmCdWHBbRi1Ho28QsSrRR+B83wqAERYVicYnJ+i8X15ArHs1F7P4t4Ryt9G+stX06fekT5GNpAM0Q==
+"@lxdgc9/pkg@^1.0.55":
+  version "1.0.55"
+  resolved "https://npm.pkg.github.com/download/@lxdgc9/pkg/1.0.55/5128b79f5c0fac7e79d3df7ec1cbc034b2093050#5128b79f5c0fac7e79d3df7ec1cbc034b2093050"
+  integrity sha512-oaUJMYNKc9bhetAc2Bq8sFuNX5bTUn2Rc7onKlrArXZgTs+GkhKIn/XXKVEpwqfUHEbb+Fli5RXk59mUBTRgKw==
   dependencies:
     express "^4.18.2"
     express-validator "^7.0.1"
@@ -853,9 +853,9 @@ semver@^5.7.1:
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
 semver@^7.3.8:
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.0.tgz#ed8c5dc8efb6c629c88b23d41dc9bf40c1d96cd0"
-  integrity sha512-+XC0AD/R7Q2mPSRuy2Id0+CGTZ98+8f+KvwirxOKIEyid+XSx6HbC63p+O4IndTHuX5Z+JxQ0TghCkO5Cg/2HA==
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.1.tgz#c90c4d631cf74720e46b21c1d37ea07edfab91ec"
+  integrity sha512-Wvss5ivl8TMRZXXESstBA4uR5iXgEN/VC5/sOcuXdVLzcdkz4HWetIoRfG5gb5X+ij/G9rw9YoGn3QoQ8OCSpw==
   dependencies:
     lru-cache "^6.0.0"
 
