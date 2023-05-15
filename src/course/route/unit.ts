@@ -7,6 +7,7 @@ import { getUnits } from "../handler/unit/get";
 import { getUnitById } from "../handler/unit/get-id";
 import { modUnit } from "../handler/unit/mod";
 import { newUnit } from "../handler/unit/new";
+import { uploader } from "../helper/upload";
 
 export const r = Router();
 
@@ -14,13 +15,16 @@ r.get("/", guard(COURSE_CODE.GET_UNIT), getUnits);
 
 r.post(
   "/",
+  guard(COURSE_CODE.NEW_UNIT),
+  uploader("unit/logo").single("logo"),
   validate(
     body("code").notEmpty(),
     body("name").notEmpty(),
     body("addr").notEmpty(),
-    body("desc").notEmpty()
+    body("desc")
+      .optional({ values: "falsy" })
+      .isLength({ min: 1, max: 255 })
   ),
-  guard(COURSE_CODE.NEW_UNIT),
   newUnit
 );
 

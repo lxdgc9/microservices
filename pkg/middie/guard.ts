@@ -34,7 +34,7 @@ export function guard(...perms: string[]) {
         throw new ForbiddenErr("access denied");
       }
 
-      if (!perms) {
+      if (!perms.length) {
         return next();
       }
 

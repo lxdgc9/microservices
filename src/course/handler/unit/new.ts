@@ -1,5 +1,6 @@
 import { ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
+import { rmSync } from "fs";
 import { Unit } from "../../model/unit";
 
 type Dto = {
@@ -22,16 +23,25 @@ export const newUnit: RequestHandler = async (
       throw new ConflictErr("duplicate unit");
     }
 
+    console.log(req.file);
+
     const newUnit = new Unit({
       code,
       name,
       addr,
       desc,
+      logo: req.file
+        ? `/api/courses/uploads/${req.file?.filename}`
+        : null,
     });
     await newUnit.save();
 
     res.status(201).json({ unit: newUnit });
   } catch (e) {
+    if (req.file) {
+      rmSync(req.file.path, { force: true });
+    }
+
     next(e);
   }
 };
