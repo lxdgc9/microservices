@@ -1,8 +1,4 @@
-import {
-  decodeJwt,
-  guard,
-  validate,
-} from "@lxdgc9/pkg/dist/middie";
+import { guard, validate } from "@lxdgc9/pkg/dist/middie";
 import { MNG_CODE } from "@lxdgc9/pkg/dist/perm";
 import { Router } from "express";
 import { body, param } from "express-validator";
@@ -17,38 +13,34 @@ import { refreshTkn } from "../handler/refresh-tkn";
 
 export const r = Router();
 
-r.get("/", decodeJwt, guard(MNG_CODE.GET_USER), getUsers);
+r.get("/", guard(MNG_CODE.GET_USER), getUsers);
 
 r.get(
   "/:id",
-  param("id").isMongoId(),
-  validate,
-  decodeJwt,
+  validate(param("id").isMongoId()),
   guard(MNG_CODE.GET_USER),
   getUserById
 );
 
 r.post(
   "/auth",
-  [
+  validate(
     body("k").notEmpty(),
     body("v").notEmpty(),
-    body("passwd").notEmpty(),
-  ],
-  validate,
+    body("passwd").notEmpty()
+  ),
   login
 );
 
 r.post(
   "/auth/refresh-token",
-  body("token").notEmpty(),
-  validate,
+  validate(body("token").notEmpty()),
   refreshTkn
 );
 
 r.post(
   "/",
-  [
+  validate(
     body("prof").notEmpty().isObject(),
     body("passwd").notEmpty().isStrongPassword({
       minLength: 6,
@@ -57,56 +49,44 @@ r.post(
       minSymbols: 0,
     }),
     body("roleId").notEmpty().isMongoId(),
-    body("active")
-      .isBoolean()
-      .optional({ values: "falsy" }),
-  ],
-  validate,
-  decodeJwt,
+    body("active").isBoolean().optional({ values: "falsy" })
+  ),
   guard(MNG_CODE.NEW_USER),
   newUser
 );
 
 r.patch(
   "/:id/passwd",
-  [
+  validate(
     body("oldPasswd").notEmpty(),
     body("newPasswd").notEmpty().isStrongPassword({
       minLength: 6,
       minLowercase: 0,
       minUppercase: 0,
       minSymbols: 0,
-    }),
-  ],
-  validate,
-  decodeJwt,
+    })
+  ),
   guard(MNG_CODE.MOD_USER),
   modPasswd
 );
 
 r.patch(
   "/:id",
-  [
+  validate(
     param("id").isMongoId(),
     body("prof").optional({ values: "falsy" }).isObject(),
     body("roleId")
       .optional({ values: "falsy" })
       .isMongoId(),
-    body("active")
-      .optional({ values: "falsy" })
-      .isBoolean(),
-  ],
-  validate,
-  decodeJwt,
+    body("active").optional({ values: "falsy" }).isBoolean()
+  ),
   guard(MNG_CODE.MOD_USER),
   modUser
 );
 
 r.delete(
   "/:id",
-  param("id").isMongoId(),
-  validate,
-  decodeJwt,
+  validate(param("id").isMongoId()),
   guard(MNG_CODE.DEL_USER),
   delUser
 );

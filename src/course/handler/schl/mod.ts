@@ -3,7 +3,7 @@ import {
   ConflictErr,
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { Unit } from "../../model/unit";
+import { Schl } from "../../model/schl";
 
 type Dto = {
   code?: string;
@@ -20,14 +20,14 @@ export const modUnit: RequestHandler = async (
   const { code, name, addr, desc }: Dto = req.body;
 
   try {
-    const unit = await Unit.findById(req.params.id);
+    const unit = await Schl.findById(req.params.id);
     if (!unit) {
       throw new BadReqErr("unit doesn't exist");
     }
 
     if (
       code !== unit.code &&
-      (await Unit.findOne({ code }))
+      (await Schl.findOne({ code }))
     ) {
       throw new ConflictErr("duplicate code");
     }
@@ -41,7 +41,7 @@ export const modUnit: RequestHandler = async (
       },
     });
 
-    res.json({ unit: await Unit.findById(unit._id) });
+    res.json({ unit: await Schl.findById(unit._id) });
   } catch (e) {
     next(e);
   }

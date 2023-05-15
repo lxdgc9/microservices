@@ -1,6 +1,6 @@
 import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { Unit } from "../../model/unit";
+import { Schl } from "../../model/schl";
 
 export const getById: RequestHandler = async (
   req,
@@ -8,7 +8,7 @@ export const getById: RequestHandler = async (
   next
 ) => {
   try {
-    const unit = await Unit.findById(req.params.id);
+    const unit = await Schl.findById(req.params.id);
     if (!unit) {
       throw new NotFoundErr("unit not found");
     }

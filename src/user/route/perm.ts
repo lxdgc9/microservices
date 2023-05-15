@@ -1,8 +1,4 @@
-import {
-  decodeJwt,
-  guard,
-  validate,
-} from "@lxdgc9/pkg/dist/middie";
+import { guard, validate } from "@lxdgc9/pkg/dist/middie";
 import { MNG_CODE } from "@lxdgc9/pkg/dist/perm";
 import { Router } from "express";
 import { body, param } from "express-validator";
@@ -19,23 +15,16 @@ import { newPerm } from "../handler/role/perm/new";
 
 export const r = Router();
 
-r.get(
-  "/group",
-  decodeJwt,
-  guard(MNG_CODE.GET_PERM),
-  getGroup
-);
+r.get("/group", guard(MNG_CODE.GET_PERM), getGroup);
 r.post(
   "/group",
-  body("name").notEmpty(),
-  validate,
-  decodeJwt,
+  validate(body("name").notEmpty()),
   guard(MNG_CODE.NEW_PERM),
   newGroup
 );
 r.patch(
   "/group/:id",
-  [
+  validate(
     param("id").isMongoId(),
     body("name")
       .optional({ values: "null" })
@@ -53,64 +42,52 @@ r.patch(
           }
         }
         return true;
-      }),
-  ],
-  validate,
-  decodeJwt,
+      })
+  ),
   guard(MNG_CODE.MOD_PERM),
   modGroup
 );
 r.delete(
   "/group/:id",
-  param("id").isMongoId(),
-  validate,
-  decodeJwt,
+  validate(param("id").isMongoId()),
   guard(MNG_CODE.DEL_PERM),
   delGroup
 );
 
-r.get("/", decodeJwt, guard(MNG_CODE.GET_PERM), getPerms);
+r.get("/", guard(MNG_CODE.GET_PERM), getPerms);
 r.get(
   "/:id",
-  param("id").isMongoId(),
-  validate,
-  decodeJwt,
+  validate(param("id").isMongoId()),
   guard(MNG_CODE.GET_PERM),
   getPermById
 );
 r.post(
   "/",
-  [
+  validate(
     body("code").notEmpty(),
     body("desc").notEmpty(),
-    body("groupId").notEmpty().isMongoId(),
-  ],
-  validate,
-  decodeJwt,
+    body("groupId").notEmpty().isMongoId()
+  ),
   guard(MNG_CODE.NEW_PERM),
   newPerm
 );
 r.patch(
   "/:id",
-  [
+  validate(
     param("id").isMongoId(),
     body("desc")
       .isLength({ min: 1, max: 255 })
       .optional({ values: "falsy" }),
     body("groupId")
       .isMongoId()
-      .optional({ values: "falsy" }),
-  ],
-  validate,
-  decodeJwt,
+      .optional({ values: "falsy" })
+  ),
   guard(MNG_CODE.MOD_PERM),
   modPerm
 );
 r.delete(
   "/:id",
-  param("id").isMongoId(),
-  validate,
-  decodeJwt,
+  validate(param("id").isMongoId()),
   guard(MNG_CODE.DEL_PERM),
   delPerm
 );

@@ -1,6 +1,6 @@
 import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
-import { Unit } from "../../model/unit";
+import { Schl } from "../../model/schl";
 
 export const delUnit: RequestHandler = async (
   req,
@@ -8,7 +8,7 @@ export const delUnit: RequestHandler = async (
   next
 ) => {
   try {
-    const unit = await Unit.findById(req.params.id);
+    const unit = await Schl.findById(req.params.id);
     if (!unit) {
       throw new BadReqErr("unit doesn't exist");
     }

@@ -1,13 +1,14 @@
 import { Schema, model } from "mongoose";
 
-interface IUnit {
+interface ISchl {
   code: string;
   name: string;
   addr?: string;
   desc?: string;
+  logo?: string;
 }
 
-const schema = new Schema<IUnit>(
+const schema = new Schema<ISchl>(
   {
     code: {
       type: String,
@@ -24,6 +25,9 @@ const schema = new Schema<IUnit>(
     desc: {
       type: String,
     },
+    logo: {
+      type: String,
+    },
   },
   {
     timestamps: true,
@@ -37,6 +41,4 @@ const schema = new Schema<IUnit>(
   }
 );
 
-schema.index({ createdAt: -1 });
-
-export const Unit = model<IUnit>("unit", schema);
+export const Schl = model<ISchl>("schl", schema);

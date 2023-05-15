@@ -1,13 +1,18 @@
 import { Schema, Types, model } from "mongoose";
 
 interface IClass {
-  unit: Types.ObjectId;
+  name: string;
+  school: Types.ObjectId;
   members: Types.ObjectId[];
 }
 
 const schema = new Schema<IClass>(
   {
-    unit: {
+    name: {
+      type: String,
+      required: true,
+    },
+    school: {
       type: Schema.Types.ObjectId,
       ref: "unit",
       required: true,

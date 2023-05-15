@@ -48,6 +48,7 @@ export const login: RequestHandler = async (
     const payload = {
       id: user._id,
       perms: user.role.perms.map((p) => p.code),
+      active: user.active,
     };
     const accessToken = sign(
       payload,
