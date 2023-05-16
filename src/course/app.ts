@@ -7,8 +7,8 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/api/courses/uploads", uploadRouter);
 app.use("/api/courses/units", unitRouter);
+app.use("/api/courses/uploads", uploadRouter);
 
 app.all("*", (_req, res) => {
   res.status(404).json({ msg: "request not found" });

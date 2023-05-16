@@ -1,12 +1,11 @@
 import { existsSync, mkdir } from "fs";
 import multer, { diskStorage } from "multer";
-import { join, resolve } from "path";
 
 export const uploader = (path: string = "/") => {
-  const customPath = join(resolve(), `upload/${path}`);
+  const dest = `uploads/${path}`;
 
-  if (!existsSync(customPath)) {
-    mkdir(customPath, { recursive: true }, (err) => {
+  if (!existsSync(dest)) {
+    mkdir(dest, { recursive: true }, (err) => {
       if (err) {
         console.log(err);
         throw err;
@@ -18,7 +17,7 @@ export const uploader = (path: string = "/") => {
   return multer({
     storage: diskStorage({
       destination(_req, _file, cb) {
-        cb(null, customPath);
+        cb(null, dest);
       },
       filename(_req, file, cb) {
         if (!file) {

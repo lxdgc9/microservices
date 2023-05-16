@@ -1,11 +1,12 @@
 import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { createReadStream, existsSync } from "fs";
-import { join, resolve } from "path";
+import { join } from "path";
 
 export const getFile: RequestHandler = (req, res, next) => {
+  const file = join("uploads", req.params[0]);
+
   try {
-    const file = join(resolve(), "upload", req.params[0]);
     if (!existsSync(file)) {
       throw new NotFoundErr("file not found");
     }

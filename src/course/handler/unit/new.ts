@@ -23,15 +23,13 @@ export const newUnit: RequestHandler = async (
       throw new ConflictErr("duplicate unit");
     }
 
-    console.log(req.file);
-
     const newUnit = new Unit({
       code,
       name,
       addr,
       desc,
       logo: req.file
-        ? `/api/courses/uploads/${req.file?.filename}`
+        ? `/api/courses/${req.file?.path}`
         : null,
     });
     await newUnit.save();
