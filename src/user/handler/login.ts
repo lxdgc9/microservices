@@ -5,18 +5,20 @@ import { sign } from "jsonwebtoken";
 import { User } from "../model/user";
 import { redis } from "../redis";
 
-type Dto = {
-  k: string;
-  v: string;
-  passwd: string;
-};
-
 export const login: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { k, v, passwd }: Dto = req.body;
+  const {
+    k,
+    v,
+    passwd,
+  }: {
+    k: string;
+    v: string;
+    passwd: string;
+  } = req.body;
 
   try {
     const user = await User.findOne({

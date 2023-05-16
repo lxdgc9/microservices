@@ -41,8 +41,9 @@ import { redis } from "./redis";
     process.on("SIGINT", () => nats.cli.close());
     process.on("SIGTERM", () => nats.cli.close());
 
-    connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDb");
+    connect(process.env.MONGO_URI).then(() =>
+      console.log("Connected to MongoDb")
+    );
 
     await redis.connect();
     await redis
@@ -52,7 +53,7 @@ import { redis } from "./redis";
     console.log(e);
   }
 
-  app.listen(3000, () => {
-    console.log("Listening on port 3000!!!");
-  });
+  app.listen(3000, () =>
+    console.log("Listening on port 3000!!!")
+  );
 })();

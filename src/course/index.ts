@@ -44,13 +44,14 @@ import { nats } from "./nats";
     new ModUserListener(nats.cli).listen();
     new DelUserListener(nats.cli).listen();
 
-    connect(process.env.MONGO_URI);
-    console.log("Connected to MongoDb");
+    connect(process.env.MONGO_URI).then(() =>
+      console.log("Connected to MongoDb")
+    );
   } catch (e) {
     console.log(e);
   }
 
-  app.listen(3000, () => {
-    console.log("Listening on port 3000!!!");
-  });
+  app.listen(3000, () =>
+    console.log("Listening on port 3000!!!")
+  );
 })();

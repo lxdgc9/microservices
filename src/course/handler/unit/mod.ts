@@ -3,6 +3,7 @@ import {
   ConflictErr,
 } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
+import { rmSync } from "fs";
 import { Unit } from "../../model/unit";
 
 type Dto = {
@@ -32,17 +33,23 @@ export const modUnit: RequestHandler = async (
       throw new ConflictErr("duplicate code");
     }
 
-    const detail = await unit.updateOne(
-      {
-        $set: {
-          code,
-          name,
-          addr,
-          desc,
-        },
+    await unit.updateOne({
+      $set: {
+        code,
+        name,
+        addr,
+        desc,
+        logo: req.file && `/api/courses/${req.file?.path}`,
       },
-      { new: true }
-    );
+    });
+
+    if (req.file && unit.logo) {
+      rmSync(unit.logo.replace("/api/courses/", ""), {
+        force: true,
+      });
+    }
+
+    const detail = await Unit.findById(unit._id);
 
     res.json({ unit: detail });
   } catch (e) {

@@ -3,43 +3,42 @@ import { RequestHandler } from "express";
 import { rmSync } from "fs";
 import { Unit } from "../../model/unit";
 
-type Dto = {
-  code: string;
-  name: string;
-  addr: string;
-  desc: string;
-};
-
 export const newUnit: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { code, name, addr, desc }: Dto = req.body;
+  const {
+    code,
+    name,
+    addr,
+    desc,
+  }: {
+    code: string;
+    name: string;
+    addr?: string;
+    desc?: string;
+  } = req.body;
 
   try {
-    const unit = await Unit.findOne({ code });
-    if (unit) {
+    if (await Unit.findOne({ code })) {
       throw new ConflictErr("duplicate unit");
     }
 
-    const newUnit = new Unit({
+    const unit = new Unit({
       code,
       name,
       addr,
       desc,
-      logo: req.file
-        ? `/api/courses/${req.file?.path}`
-        : null,
+      logo: req.file && `/api/courses/${req.file.path}`,
     });
-    await newUnit.save();
+    await unit.save();
 
-    res.status(201).json({ unit: newUnit });
+    res.status(201).json({ unit });
   } catch (e) {
-    if (req.file) {
-      rmSync(req.file.path, { force: true });
-    }
-
     next(e);
+    if (req.file) {
+      rmSync(req.file.path);
+    }
   }
 };

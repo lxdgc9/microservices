@@ -1,14 +1,12 @@
 import { RequestHandler } from "express";
 import { Unit } from "../../model/unit";
 
-export const getUnits: RequestHandler = async (
+export const getUnits: RequestHandler = (
   _req,
   res,
   next
 ) => {
-  try {
-    res.json({ schools: await Unit.find() });
-  } catch (e) {
-    next(e);
-  }
+  Unit.find()
+    .then((units) => res.json({ units }))
+    .catch(next);
 };

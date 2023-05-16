@@ -13,15 +13,50 @@ import { refreshTkn } from "../handler/refresh-tkn";
 
 export const r = Router();
 
-r.get("/", guard(MNG_CODE.GET_USER), getUsers);
-
-r.get(
-  "/:id",
-  validate(param("id").isMongoId()),
-  guard(MNG_CODE.GET_USER),
-  getUserById
-);
-
+r.route("/")
+  .get(guard(MNG_CODE.GET_USER), getUsers)
+  .post(
+    validate(
+      body("prof").notEmpty().isObject(),
+      body("passwd").notEmpty().isStrongPassword({
+        minLength: 6,
+        minLowercase: 0,
+        minUppercase: 0,
+        minSymbols: 0,
+      }),
+      body("roleId").notEmpty().isMongoId(),
+      body("active")
+        .isBoolean()
+        .optional({ values: "falsy" })
+    ),
+    guard(MNG_CODE.NEW_USER),
+    newUser
+  );
+r.route("/:id")
+  .get(
+    validate(param("id").isMongoId()),
+    guard(MNG_CODE.GET_USER),
+    getUserById
+  )
+  .patch(
+    validate(
+      param("id").isMongoId(),
+      body("prof").optional({ values: "falsy" }).isObject(),
+      body("roleId")
+        .optional({ values: "falsy" })
+        .isMongoId(),
+      body("active")
+        .optional({ values: "falsy" })
+        .isBoolean()
+    ),
+    guard(MNG_CODE.MOD_USER),
+    modUser
+  )
+  .delete(
+    validate(param("id").isMongoId()),
+    guard(MNG_CODE.DEL_USER),
+    delUser
+  );
 r.post(
   "/auth",
   validate(
@@ -31,30 +66,11 @@ r.post(
   ),
   login
 );
-
 r.post(
   "/auth/refresh-token",
   validate(body("token").notEmpty()),
   refreshTkn
 );
-
-r.post(
-  "/",
-  validate(
-    body("prof").notEmpty().isObject(),
-    body("passwd").notEmpty().isStrongPassword({
-      minLength: 6,
-      minLowercase: 0,
-      minUppercase: 0,
-      minSymbols: 0,
-    }),
-    body("roleId").notEmpty().isMongoId(),
-    body("active").isBoolean().optional({ values: "falsy" })
-  ),
-  guard(MNG_CODE.NEW_USER),
-  newUser
-);
-
 r.patch(
   "/:id/passwd",
   validate(
@@ -68,25 +84,4 @@ r.patch(
   ),
   guard(MNG_CODE.MOD_USER),
   modPasswd
-);
-
-r.patch(
-  "/:id",
-  validate(
-    param("id").isMongoId(),
-    body("prof").optional({ values: "falsy" }).isObject(),
-    body("roleId")
-      .optional({ values: "falsy" })
-      .isMongoId(),
-    body("active").optional({ values: "falsy" }).isBoolean()
-  ),
-  guard(MNG_CODE.MOD_USER),
-  modUser
-);
-
-r.delete(
-  "/:id",
-  validate(param("id").isMongoId()),
-  guard(MNG_CODE.DEL_USER),
-  delUser
 );
