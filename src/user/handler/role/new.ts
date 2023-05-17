@@ -6,43 +6,43 @@ import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
 import { nats } from "../../nats";
 
-type Dto = {
-  name: string;
-  permIds: Types.ObjectId[];
-};
-
 export const newRole: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { name, permIds }: Dto = req.body;
-
+  const {
+    name,
+    permIds,
+  }: {
+    name: string;
+    permIds: Types.ObjectId[];
+  } = req.body;
   try {
-    const perms = await Perm.find({
+    const sizeofPerms = await Perm.countDocuments({
       _id: { $in: permIds },
     });
-    if (permIds.length < perms.length) {
+    if (sizeofPerms < permIds.length) {
       throw new BadReqErr("permIds doesn't match");
     }
 
-    const role = new Role({
+    const newRole = new Role({
       name,
-      perms: perms.map((p) => p._id),
+      perms: permIds,
     });
-    await role.save();
+    await newRole.save();
 
-    const detail = await Role.findById(role._id).populate({
+    const role = await Role.findById(newRole._id).populate({
       path: "perms",
       select: "-group",
     });
 
-    res.json({ role: detail });
+    res.json({ role });
 
-    new LogPublisher(nats.cli).publish({
+    await new LogPublisher(nats.cli).publish({
       act: "NEW",
       model: Role.modelName,
-      doc: detail!,
+      doc: role!,
       userId: req.user?.id,
       status: true,
     });

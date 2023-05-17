@@ -17,7 +17,6 @@ export const getPermById: RequestHandler = async (
     if (!perm) {
       throw new NotFoundErr("permission not found");
     }
-
     res.json({ perm });
   } catch (e) {
     next(e);

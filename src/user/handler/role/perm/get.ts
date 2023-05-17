@@ -7,12 +7,11 @@ export const getPerms: RequestHandler = async (
   next
 ) => {
   try {
-    res.json({
-      perms: await PermGr.find().populate({
-        path: "perms",
-        select: "-group",
-      }),
+    const perms = await PermGr.find().populate({
+      path: "perms",
+      select: "-group",
     });
+    res.json({ perms });
   } catch (e) {
     next(e);
   }

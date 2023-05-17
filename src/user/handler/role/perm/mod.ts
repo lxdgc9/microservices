@@ -9,19 +9,22 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 import { nats } from "../../../nats";
 
-type Dto = {
-  code?: string;
-  desc?: string;
-  groupId?: Types.ObjectId;
-};
-
 export const modPerm: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { code, desc, groupId }: Dto = req.body;
+  const {
+    code,
+    desc,
+    groupId,
+  }: {
+    code?: string;
+    desc?: string;
+    groupId?: Types.ObjectId;
+  } = req.body;
   try {
+    const [] = await Promise.all([Perm.exists({ code })]);
     const perm = await Perm.findById(req.params.id);
     if (!perm) {
       throw new BadReqErr("permission doesn't exist");
@@ -72,7 +75,7 @@ export const modPerm: RequestHandler = async (
       }),
     });
 
-    new LogPublisher(nats.cli).publish({
+    await new LogPublisher(nats.cli).publish({
       act: "MOD",
       model: Perm.modelName,
       doc: perm,

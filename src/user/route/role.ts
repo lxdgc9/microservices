@@ -5,7 +5,7 @@ import { body, param } from "express-validator";
 import { Types } from "mongoose";
 import { delRole } from "../handler/role/del";
 import { getRoles } from "../handler/role/get";
-import { getRoleById } from "../handler/role/get-id";
+import { getRole } from "../handler/role/get-id";
 import { modRole } from "../handler/role/mod";
 import { newRole } from "../handler/role/new";
 
@@ -37,7 +37,7 @@ r.route("/:id")
   .get(
     validate(param("id").isMongoId()),
     guard(MNG_CODE.GET_ROLE),
-    getRoleById
+    getRole
   )
   .patch(
     validate(

@@ -4,12 +4,12 @@ import { Router } from "express";
 import { body, param } from "express-validator";
 import { delUser } from "../handler/del";
 import { getUsers } from "../handler/get";
-import { getUserById } from "../handler/get-id";
+import { getUser } from "../handler/get-id";
 import { login } from "../handler/login";
 import { modUser } from "../handler/mod";
 import { modPasswd } from "../handler/mod-pass";
 import { newUser } from "../handler/new";
-import { refreshTkn } from "../handler/refresh-tkn";
+import { rtk } from "../handler/rtk";
 
 export const r = Router();
 
@@ -36,7 +36,7 @@ r.route("/:id")
   .get(
     validate(param("id").isMongoId()),
     guard(MNG_CODE.GET_USER),
-    getUserById
+    getUser
   )
   .patch(
     validate(
@@ -67,9 +67,9 @@ r.post(
   login
 );
 r.post(
-  "/auth/refresh-token",
+  "/auth/rtk",
   validate(body("token").notEmpty()),
-  refreshTkn
+  rtk
 );
 r.patch(
   "/:id/passwd",

@@ -10,63 +10,65 @@ import { Role } from "../model/role";
 import { User } from "../model/user";
 import { nats } from "../nats";
 
-type Dto = {
-  prof: object;
-  passwd: string;
-  roleId: Types.ObjectId;
-  active?: boolean;
-};
-
 export const newUser: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { prof, passwd, roleId, active }: Dto = req.body;
-
+  const {
+    prof,
+    passwd,
+    roleId,
+    active,
+  }: {
+    prof: object & {
+      username: string;
+      phone: string;
+      email: string;
+    };
+    passwd: string;
+    roleId: Types.ObjectId;
+    active?: boolean;
+  } = req.body;
   try {
-    if (!(await Role.findById(roleId))) {
+    const [isDupl, existRole] = await Promise.all([
+      User.exists({
+        $or: [
+          {
+            attrs: {
+              $elemMatch: {
+                k: "username",
+                v: prof.username,
+              },
+            },
+          },
+          {
+            attrs: {
+              $elemMatch: {
+                k: "phone",
+                v: prof.phone,
+              },
+            },
+          },
+          {
+            attrs: {
+              $elemMatch: {
+                k: "email",
+                v: prof.email,
+              },
+            },
+          },
+        ],
+      }),
+      Role.exists({ _id: roleId }),
+    ]);
+    if (isDupl) {
+      throw new ConflictErr(
+        "duplicate username, phone or email"
+      );
+    }
+    if (!existRole) {
       throw new BadReqErr("role doesn't exist");
-    }
-
-    const {
-      username,
-      phone,
-      email,
-    }: {
-      username?: string;
-      phone?: string;
-      email?: string;
-    } = prof;
-    if (
-      username &&
-      (await User.findOne({
-        attrs: {
-          $elemMatch: { k: "username", v: username },
-        },
-      }))
-    ) {
-      throw new ConflictErr("duplicate username");
-    }
-    if (
-      phone &&
-      (await User.findOne({
-        attrs: {
-          $elemMatch: { k: "phone", v: phone },
-        },
-      }))
-    ) {
-      throw new ConflictErr("duplicate phone");
-    }
-    if (
-      email &&
-      (await User.findOne({
-        attrs: {
-          $elemMatch: { k: "email", v: email },
-        },
-      }))
-    ) {
-      throw new ConflictErr("duplicate email");
     }
 
     const newUser = new User({
@@ -80,9 +82,7 @@ export const newUser: RequestHandler = async (
     });
     await newUser.save();
 
-    const detail = await User.findById(
-      newUser._id
-    ).populate({
+    const user = await User.findById(newUser._id).populate({
       path: "role",
       populate: {
         path: "perms",
@@ -90,16 +90,18 @@ export const newUser: RequestHandler = async (
       },
     });
 
-    res.status(201).json({ user: detail });
+    res.status(201).json({ user });
 
-    new NewUserPublisher(nats.cli).publish(detail!);
-    new LogPublisher(nats.cli).publish({
-      act: "NEW",
-      model: User.modelName,
-      doc: detail!,
-      userId: req.user?.id,
-      status: true,
-    });
+    await Promise.all([
+      new NewUserPublisher(nats.cli).publish(user!),
+      new LogPublisher(nats.cli).publish({
+        act: "NEW",
+        model: User.modelName,
+        doc: user!,
+        userId: req.user?.id,
+        status: true,
+      }),
+    ]);
   } catch (e) {
     next(e);
   }

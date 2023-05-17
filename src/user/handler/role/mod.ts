@@ -6,49 +6,49 @@ import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
 import { nats } from "../../nats";
 
-type Dto = {
-  name?: string;
-  permIds?: Types.ObjectId[];
-};
-
 export const modRole: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { name, permIds }: Dto = req.body;
+  const {
+    name,
+    permIds,
+  }: {
+    name?: string;
+    permIds?: Types.ObjectId[];
+  } = req.body;
   try {
-    const role = await Role.findById(req.params.id);
+    const [role, sizeofPerms] = await Promise.all([
+      Role.findById(req.params.id),
+      Perm.countDocuments({
+        _id: { $in: permIds },
+      }).then((perms) => perms),
+    ]);
     if (!role) {
       throw new BadReqErr("role doesn't exist");
     }
-
-    if (permIds) {
-      const perms = await Perm.find({
-        _id: { $in: permIds },
-      });
-      if (perms.length < permIds.length) {
-        throw new BadReqErr("permIds doesn't match");
-      }
+    if (permIds && sizeofPerms < permIds.length) {
+      throw new BadReqErr("permIds doesn't match");
     }
 
-    res.json({
-      role: await Role.findByIdAndUpdate(
-        role._id,
-        {
-          $set: {
-            name,
-            perms: permIds,
-          },
+    const updatedRole = await Role.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          name,
+          perms: permIds,
         },
-        { new: true }
-      ).populate({
-        path: "perms",
-        select: "-group",
-      }),
+      },
+      { new: true }
+    ).populate({
+      path: "perms",
+      select: "-group",
     });
 
-    new LogPublisher(nats.cli).publish({
+    res.json({ role: updatedRole });
+
+    await new LogPublisher(nats.cli).publish({
       act: "MOD",
       model: Role.modelName,
       doc: role,

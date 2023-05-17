@@ -5,13 +5,12 @@ import { sign, verify } from "jsonwebtoken";
 import { User } from "../model/user";
 import { redis } from "../redis";
 
-export const refreshTkn: RequestHandler = async (
+export const rtk: RequestHandler = async (
   req,
   res,
   next
 ) => {
   const { token }: { token: string } = req.body;
-
   try {
     const { id } = verify(
       token,

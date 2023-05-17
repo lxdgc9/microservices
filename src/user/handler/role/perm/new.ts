@@ -9,26 +9,28 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 import { nats } from "../../../nats";
 
-type Dto = {
-  code: string;
-  desc: string;
-  groupId: Types.ObjectId;
-};
-
 export const newPerm: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { code, desc, groupId }: Dto = req.body;
-
+  const {
+    code,
+    desc,
+    groupId,
+  }: {
+    code: string;
+    desc: string;
+    groupId: Types.ObjectId;
+  } = req.body;
   try {
-    const perm = await Perm.findOne({ code });
-    if (perm) {
-      throw new ConflictErr("permission already exists");
+    const [isDupl, group] = await Promise.all([
+      Perm.exists({ code }),
+      PermGr.findById(groupId),
+    ]);
+    if (isDupl) {
+      throw new ConflictErr("duplicate code");
     }
-
-    const group = await PermGr.findById(groupId);
     if (!group) {
       throw new BadReqErr("permission group doesn't exist");
     }
@@ -36,27 +38,28 @@ export const newPerm: RequestHandler = async (
     const newPerm = new Perm({
       code,
       desc,
-      group: group._id,
+      group: groupId,
     });
-    await newPerm.save();
+    await Promise.all([
+      newPerm.save(),
+      group.updateOne({
+        $addToSet: {
+          perms: newPerm._id,
+        },
+      }),
+    ]);
 
-    await group.updateOne({
-      $addToSet: { perms: newPerm._id },
-    });
-
-    const detail = await Perm.findById(
-      newPerm._id
-    ).populate({
+    const perm = await Perm.findById(newPerm._id).populate({
       path: "group",
       select: "-perms",
     });
 
-    res.status(201).send({ perm: detail });
+    res.status(201).send({ perm });
 
-    new LogPublisher(nats.cli).publish({
+    await new LogPublisher(nats.cli).publish({
       act: "NEW",
       model: Perm.modelName,
-      doc: detail!,
+      doc: perm!,
       userId: req.user?.id,
       status: true,
     });

@@ -7,14 +7,13 @@ export const getRoles: RequestHandler = async (
   next
 ) => {
   try {
-    res.json({
-      roles: await Role.find()
-        .populate({
-          path: "perms",
-          select: "-group",
-        })
-        .sort({ createdAt: -1 }),
-    });
+    const roles = await Role.find()
+      .sort({ _id: -1 })
+      .populate({
+        path: "perms",
+        select: "-group",
+      });
+    res.json({ roles });
   } catch (e) {
     next(e);
   }

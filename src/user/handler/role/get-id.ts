@@ -2,7 +2,7 @@ import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Role } from "../../model/role";
 
-export const getRoleById: RequestHandler = async (
+export const getRole: RequestHandler = async (
   req,
   res,
   next
@@ -17,7 +17,7 @@ export const getRoleById: RequestHandler = async (
     if (!role) {
       throw new NotFoundErr("role not found");
     }
-    res.send({ role });
+    res.json({ role });
   } catch (e) {
     next(e);
   }

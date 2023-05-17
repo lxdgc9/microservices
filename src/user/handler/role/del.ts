@@ -19,7 +19,7 @@ export const delRole: RequestHandler = async (
 
     res.json({ msg: "delete successfully" });
 
-    new LogPublisher(nats.cli).publish({
+    await new LogPublisher(nats.cli).publish({
       act: "DEL",
       model: Role.modelName,
       doc: role,

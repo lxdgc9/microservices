@@ -20,14 +20,16 @@ export const delUser: RequestHandler = async (
 
     res.json({ msg: "delete successfully" });
 
-    new DelUserPublisher(nats.cli).publish(user._id);
-    new LogPublisher(nats.cli).publish({
-      act: "DEL",
-      model: User.modelName,
-      doc: user,
-      userId: req.user?.id,
-      status: true,
-    });
+    await Promise.all([
+      new DelUserPublisher(nats.cli).publish(user._id),
+      new LogPublisher(nats.cli).publish({
+        act: "DEL",
+        model: User.modelName,
+        doc: user,
+        userId: req.user?.id,
+        status: true,
+      }),
+    ]);
   } catch (e) {
     next(e);
   }

@@ -23,7 +23,7 @@ export const login: RequestHandler = async (
   try {
     const user = await User.findOne({
       attrs: {
-        $elemMatch: { k: k, v: v },
+        $elemMatch: { k, v },
       },
     }).populate<{
       role: {
@@ -42,12 +42,12 @@ export const login: RequestHandler = async (
       throw new UnauthorizedErr("user doesn't exist");
     }
 
-    const isMatch = await compare(passwd, user.passwd);
-    if (!isMatch) {
+    const passMatch = await compare(passwd, user.passwd);
+    if (!passMatch) {
       throw new UnauthorizedErr("wrong password");
     }
 
-    const accessToken = sign(
+    const atk = sign(
       {
         id: user._id,
         perms: user.role.perms.map((p) => p.code),
@@ -56,7 +56,7 @@ export const login: RequestHandler = async (
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
-    const refreshToken = sign(
+    const rtk = sign(
       { id: user._id },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: 36288000 }
@@ -64,11 +64,11 @@ export const login: RequestHandler = async (
 
     res.json({
       user,
-      accessToken,
-      refreshToken,
+      accessToken: atk,
+      refreshToken: rtk,
     });
 
-    await redis.set(`rf-tkn.${user._id}`, refreshToken, {
+    await redis.set(`rf-tkn.${user._id}`, rtk, {
       EX: 36288001,
     });
   } catch (e) {

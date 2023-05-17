@@ -7,14 +7,13 @@ export const getUsers: RequestHandler = async (
   next
 ) => {
   try {
-    res.json({
-      users: await User.find()
-        .populate({
-          path: "role",
-          select: "-perms",
-        })
-        .sort({ createdAt: -1 }),
-    });
+    const users = await User.find()
+      .sort({ _id: -1 })
+      .populate({
+        path: "role",
+        select: "-perms",
+      });
+    res.json({ users });
   } catch (e) {
     next(e);
   }

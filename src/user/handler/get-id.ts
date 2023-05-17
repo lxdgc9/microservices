@@ -2,7 +2,7 @@ import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { User } from "../model/user";
 
-export const getUserById: RequestHandler = async (
+export const getUser: RequestHandler = async (
   req,
   res,
   next

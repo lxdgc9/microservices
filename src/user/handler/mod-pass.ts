@@ -3,26 +3,26 @@ import { compare } from "bcryptjs";
 import { RequestHandler } from "express";
 import { User } from "../model/user";
 
-type Dto = {
-  oldPasswd: string;
-  newPasswd: string;
-};
-
 export const modPasswd: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { oldPasswd, newPasswd }: Dto = req.body;
-
+  const {
+    oldPasswd,
+    newPasswd,
+  }: {
+    oldPasswd: string;
+    newPasswd: string;
+  } = req.body;
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
       throw new BadReqErr("user doesn't exist");
     }
 
-    const isMatch = await compare(oldPasswd, user.passwd);
-    if (!isMatch) {
+    const passMatch = await compare(oldPasswd, user.passwd);
+    if (!passMatch) {
       throw new BadReqErr("wrong password");
     }
 
