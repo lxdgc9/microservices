@@ -24,7 +24,9 @@ export const modPerm: RequestHandler = async (
     groupId?: Types.ObjectId;
   } = req.body;
   try {
-    const [] = await Promise.all([Perm.exists({ code })]);
+    const [isDupl, ] = await Promise.all([
+      Perm.exists({ code }),
+    ]);
     const perm = await Perm.findById(req.params.id);
     if (!perm) {
       throw new BadReqErr("permission doesn't exist");
