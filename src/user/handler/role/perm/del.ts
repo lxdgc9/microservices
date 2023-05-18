@@ -19,18 +19,18 @@ export const delPerm: RequestHandler = async (
     }
 
     res.json({ msg: "delete successfully" });
-
-    await PermGr.findByIdAndUpdate(perm.group, {
-      $pull: { perms: perm._id },
-    });
-
-    new LogPublisher(nats.cli).publish({
-      act: "DEL",
-      model: Perm.modelName,
-      doc: perm,
-      userId: req.user?.id,
-      status: true,
-    });
+    await Promise.all([
+      PermGr.findByIdAndUpdate(perm.group, {
+        $pull: { perms: perm._id },
+      }),
+      new LogPublisher(nats.cli).publish({
+        act: "DEL",
+        model: Perm.modelName,
+        doc: perm,
+        userId: req.user?.id,
+        status: true,
+      }),
+    ]);
   } catch (e) {
     next(e);
   }

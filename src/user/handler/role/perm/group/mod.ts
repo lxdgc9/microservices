@@ -6,64 +6,64 @@ import { Perm } from "../../../../model/perm";
 import { PermGr } from "../../../../model/perm-gr";
 import { nats } from "../../../../nats";
 
-type Dto = {
-  name?: string;
-  groupIds?: Types.ObjectId[];
-};
-
 export const modGroup: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { name, groupIds }: Dto = req.body;
+  const {
+    name,
+    permIds,
+  }: {
+    name?: string;
+    permIds?: Types.ObjectId[];
+  } = req.body;
   try {
-    const group = await PermGr.findById(req.params.id);
+    const [group, sizeofGr] = await Promise.all([
+      PermGr.findById(req.params.id),
+      Perm.countDocuments({
+        _id: {
+          $in: permIds,
+        },
+      }),
+    ]);
     if (!group) {
       throw new BadReqErr("permission group doesn't exist");
     }
-
-    if (groupIds) {
-      const perms = await Perm.find({
-        _id: { $in: groupIds },
-      });
-      if (groupIds.length > perms.length) {
-        throw new Error("groupIds doesn't match");
-      }
-
-      Promise.all([
-        await group.updateOne({
-          $set: {
-            name,
-            perms: groupIds,
-          },
-        }),
-        await Perm.deleteMany({
-          _id: group.perms.filter(
-            (p) => !groupIds.includes(p)
-          ),
-        }),
-      ]);
-    } else {
-      await group.updateOne({
-        $set: { name },
-      });
+    if (permIds && sizeofGr < permIds.length) {
+      throw new Error("permIds doesn't match");
     }
 
-    res.json({
-      group: await PermGr.findById(group._id).populate({
+    await Promise.all([
+      group.updateOne({
+        $set: {
+          name,
+          perms: permIds,
+        },
+      }),
+      permIds &&
+        Perm.deleteMany({
+          _id: group.perms.filter(
+            (p) => !permIds.includes(p)
+          ),
+        }),
+    ]);
+
+    const [updatedGroup] = await Promise.all([
+      PermGr.findById(group._id).populate({
         path: "perms",
         select: "-group",
       }),
-    });
+      new LogPublisher(nats.cli).publish({
+        act: "MOD",
+        model: PermGr.modelName,
+        doc: group,
+        userId: req.user?.id,
+        status: true,
+      }),
+    ]);
 
-    new LogPublisher(nats.cli).publish({
-      act: "MOD",
-      model: PermGr.modelName,
-      doc: group,
-      userId: req.user?.id,
-      status: true,
-    });
+    res.json({ group: updatedGroup });
   } catch (e) {
     next(e);
   }

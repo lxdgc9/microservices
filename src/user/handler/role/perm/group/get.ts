@@ -1,13 +1,15 @@
 import { RequestHandler } from "express";
 import { PermGr } from "../../../../model/perm-gr";
 
-export const getGroup: RequestHandler = (
+export const getGroup: RequestHandler = async (
   _req,
   res,
   next
 ) => {
-  PermGr.find()
-    .select("-perms")
-    .then((group) => res.json({ group }))
-    .catch(next);
+  try {
+    const group = await PermGr.find().select("-perms");
+    res.json({ group });
+  } catch (e) {
+    next(e);
+  }
 };

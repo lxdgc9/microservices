@@ -20,15 +20,16 @@ export const delGroup: RequestHandler = async (
 
     res.json({ msg: "delete successfully" });
 
-    Perm.deleteMany({ _id: group.perms });
-
-    new LogPublisher(nats.cli).publish({
-      act: "DEL",
-      model: PermGr.modelName,
-      doc: group,
-      userId: req.user?.id,
-      status: true,
-    });
+    await Promise.all([
+      Perm.deleteMany({ _id: group.perms }),
+      new LogPublisher(nats.cli).publish({
+        act: "DEL",
+        model: PermGr.modelName,
+        doc: group,
+        userId: req.user?.id,
+        status: true,
+      }),
+    ]);
   } catch (e) {
     next(e);
   }
