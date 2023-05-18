@@ -19,6 +19,7 @@ export const delPerm: RequestHandler = async (
     }
 
     res.json({ msg: "delete successfully" });
+
     await Promise.all([
       PermGr.findByIdAndUpdate(perm.group, {
         $pull: { perms: perm._id },

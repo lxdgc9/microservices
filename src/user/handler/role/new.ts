@@ -19,10 +19,10 @@ export const newRole: RequestHandler = async (
     permIds: Types.ObjectId[];
   } = req.body;
   try {
-    const sizeofPerms = await Perm.countDocuments({
+    const numPerms = await Perm.countDocuments({
       _id: { $in: permIds },
     });
-    if (sizeofPerms < permIds.length) {
+    if (numPerms < permIds.length) {
       throw new BadReqErr("permIds doesn't match");
     }
 

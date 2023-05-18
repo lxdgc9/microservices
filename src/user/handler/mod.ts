@@ -77,7 +77,7 @@ export const modUser: RequestHandler = async (
       throw new BadReqErr("role doesn't exist");
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
+    const updUser = await User.findByIdAndUpdate(
       user._id,
       {
         $set: {
@@ -100,10 +100,10 @@ export const modUser: RequestHandler = async (
       },
     });
 
-    res.json({ user: updatedUser });
+    res.json({ user: updUser });
 
     await Promise.all([
-      new ModUserPublisher(nats.cli).publish(updatedUser!),
+      new ModUserPublisher(nats.cli).publish(updUser!),
       new LogPublisher(nats.cli).publish({
         act: "MOD",
         model: User.modelName,

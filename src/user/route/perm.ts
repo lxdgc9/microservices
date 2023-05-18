@@ -29,12 +29,12 @@ r.route("/group/:id")
       body("name")
         .optional({ values: "null" })
         .isLength({ min: 1, max: 255 }),
-      body("groupIds")
-        .optional({ values: "falsy" })
+      body("permIds")
+        .optional({ values: "undefined" })
         .isArray()
-        .custom((v) => {
-          if (v) {
-            const isValid = v.every((id: string) =>
+        .custom((ids) => {
+          if (ids) {
+            const isValid = ids.every((id: string) =>
               Types.ObjectId.isValid(id)
             );
             if (!isValid) {

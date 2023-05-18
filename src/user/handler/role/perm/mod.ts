@@ -29,14 +29,14 @@ export const modPerm: RequestHandler = async (
       throw new BadReqErr("permission doesn't exist");
     }
 
-    const [isDupl, existGroup] = await Promise.all([
+    const [isDupl, existGr] = await Promise.all([
       Perm.exists({ code }),
       PermGr.exists({ _id: groupId }),
     ]);
     if (code && isDupl) {
       throw new ConflictErr("code duplicated");
     }
-    if (groupId && !existGroup) {
+    if (groupId && !existGr) {
       throw new BadReqErr("permission group doesn't exist");
     }
 
@@ -59,7 +59,7 @@ export const modPerm: RequestHandler = async (
       },
     });
 
-    const [updatedPerm] = await Promise.all([
+    const [updPerm] = await Promise.all([
       Perm.findById(perm._id).populate({
         path: "group",
         select: "-perms",
@@ -73,7 +73,7 @@ export const modPerm: RequestHandler = async (
       }),
     ]);
 
-    res.json({ perm: updatedPerm });
+    res.json({ perm: updPerm });
   } catch (e) {
     next(e);
   }

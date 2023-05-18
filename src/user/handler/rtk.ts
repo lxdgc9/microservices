@@ -17,7 +17,8 @@ export const rtk: RequestHandler = async (
       process.env.REFRESH_TOKEN_SECRET!
     ) as JwtPayload;
 
-    if ((await redis.get(`rf-tkn.${id}`)) !== token) {
+    const storedTk = await redis.get(`rf-tkn.${id}`);
+    if (storedTk !== token) {
       throw new UnauthorizedErr(
         "require login, can't refresh token"
       );
@@ -40,7 +41,7 @@ export const rtk: RequestHandler = async (
       throw new UnauthorizedErr("user doesn't exist");
     }
 
-    const accessToken = sign(
+    const atk = sign(
       {
         id: user._id,
         perms: user.role.perms.map((p) => p.code),
@@ -49,15 +50,18 @@ export const rtk: RequestHandler = async (
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
-    const refreshToken = sign(
+    const rtk = sign(
       { id: user._id },
       process.env.REFRESH_TOKEN_SECRET!,
       { expiresIn: 36288000 }
     );
 
-    res.json({ accessToken, refreshToken });
+    res.json({
+      accessToken: atk,
+      refreshToken: rtk,
+    });
 
-    await redis.set(`rf-tkn.${id}`, refreshToken, {
+    await redis.set(`rf-tkn.${id}`, rtk, {
       EX: 36288001,
     });
   } catch (e) {

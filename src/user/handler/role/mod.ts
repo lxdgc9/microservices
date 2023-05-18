@@ -19,7 +19,7 @@ export const modRole: RequestHandler = async (
     permIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [role, sizeofPerms] = await Promise.all([
+    const [role, numPerms] = await Promise.all([
       Role.findById(req.params.id),
       Perm.countDocuments({
         _id: { $in: permIds },
@@ -28,11 +28,11 @@ export const modRole: RequestHandler = async (
     if (!role) {
       throw new BadReqErr("role doesn't exist");
     }
-    if (permIds && sizeofPerms < permIds.length) {
+    if (permIds && numPerms < permIds.length) {
       throw new BadReqErr("permIds doesn't match");
     }
 
-    const updatedRole = await Role.findByIdAndUpdate(
+    const updRole = await Role.findByIdAndUpdate(
       req.params.id,
       {
         $set: {
@@ -46,7 +46,7 @@ export const modRole: RequestHandler = async (
       select: "-group",
     });
 
-    res.json({ role: updatedRole });
+    res.json({ role: updRole });
 
     await new LogPublisher(nats.cli).publish({
       act: "MOD",

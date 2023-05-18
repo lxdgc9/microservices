@@ -26,9 +26,8 @@ export const modPasswd: RequestHandler = async (
       throw new BadReqErr("wrong password");
     }
 
-    await user.updateOne({
-      $set: { passwd: newPasswd },
-    });
+    user.passwd = newPasswd;
+    await user.save();
 
     res.json({ msg: "change password successfully" });
   } catch (e) {

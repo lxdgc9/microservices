@@ -19,7 +19,6 @@ export const login: RequestHandler = async (
     v: string;
     passwd: string;
   } = req.body;
-
   try {
     const user = await User.findOne({
       attrs: {

@@ -19,7 +19,7 @@ export const modGroup: RequestHandler = async (
     permIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [group, sizeofGr] = await Promise.all([
+    const [group, numGrps] = await Promise.all([
       PermGr.findById(req.params.id),
       Perm.countDocuments({
         _id: {
@@ -30,7 +30,7 @@ export const modGroup: RequestHandler = async (
     if (!group) {
       throw new BadReqErr("permission group doesn't exist");
     }
-    if (permIds && sizeofGr < permIds.length) {
+    if (permIds && numGrps < permIds.length) {
       throw new Error("permIds doesn't match");
     }
 
@@ -49,7 +49,7 @@ export const modGroup: RequestHandler = async (
         }),
     ]);
 
-    const [updatedGroup] = await Promise.all([
+    const [updGrp] = await Promise.all([
       PermGr.findById(group._id).populate({
         path: "perms",
         select: "-group",
@@ -63,7 +63,7 @@ export const modGroup: RequestHandler = async (
       }),
     ]);
 
-    res.json({ group: updatedGroup });
+    res.json({ group: updGrp });
   } catch (e) {
     next(e);
   }

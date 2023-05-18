@@ -2,13 +2,17 @@ import { RequestHandler } from "express";
 import { User } from "../model/user";
 
 export const getUsers: RequestHandler = async (
-  _req,
+  req,
   res,
   next
 ) => {
+  const { cursor, size = 0 } = req.query;
   try {
-    const users = await User.find()
+    const users = await User.find(
+      cursor ? { _id: { $lt: cursor } } : {}
+    )
       .sort({ _id: -1 })
+      .limit(parseInt(size.toString()))
       .populate({
         path: "role",
         select: "-perms",

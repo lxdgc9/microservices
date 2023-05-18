@@ -8,7 +8,15 @@ export const getUser: RequestHandler = async (
   next
 ) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(
+      req.params.id
+    ).populate({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
+      },
+    });
     if (!user) {
       throw new NotFoundErr("user doesn't exist");
     }

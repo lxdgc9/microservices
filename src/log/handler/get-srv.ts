@@ -7,10 +7,11 @@ export const getSrv: RequestHandler = async (
   next
 ) => {
   try {
+    const services = (
+      await connection.db.listCollections().toArray()
+    ).map((c) => c.name);
     res.json({
-      srvs: (
-        await connection.db.listCollections().toArray()
-      ).map((c) => c.name),
+      services,
     });
   } catch (e) {
     next(e);
