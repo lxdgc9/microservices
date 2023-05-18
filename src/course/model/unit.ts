@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 interface IUnit {
   code: string;
@@ -6,6 +6,7 @@ interface IUnit {
   addr?: string;
   desc?: string;
   logo?: string;
+  classes: Types.ObjectId[];
 }
 
 const schema = new Schema<IUnit>(
@@ -28,6 +29,12 @@ const schema = new Schema<IUnit>(
     logo: {
       type: String,
     },
+    classes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "class",
+      },
+    ],
   },
   {
     timestamps: true,

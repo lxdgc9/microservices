@@ -13,9 +13,11 @@ export const modRole: RequestHandler = async (
 ) => {
   const {
     name,
+    level,
     permIds,
   }: {
     name?: string;
+    level?: number;
     permIds?: Types.ObjectId[];
   } = req.body;
   try {
@@ -37,6 +39,7 @@ export const modRole: RequestHandler = async (
       {
         $set: {
           name,
+          level,
           perms: permIds,
         },
       },

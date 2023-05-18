@@ -62,6 +62,10 @@ r.route("/")
     ),
     guard(MNG_CODE.NEW_PERM),
     newPerm
+  )
+  .put(
+    validate(),
+    guard(MNG_CODE.NEW_PERM, MNG_CODE.MOD_PERM)
   );
 r.route("/:id")
   .get(

@@ -13,9 +13,11 @@ export const newRole: RequestHandler = async (
 ) => {
   const {
     name,
+    level,
     permIds,
   }: {
     name: string;
+    level: number;
     permIds: Types.ObjectId[];
   } = req.body;
   try {
@@ -28,6 +30,7 @@ export const newRole: RequestHandler = async (
 
     const newRole = new Role({
       name,
+      level,
       perms: permIds,
     });
     await newRole.save();
