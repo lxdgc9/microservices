@@ -12,16 +12,20 @@ export const newUsers: RequestHandler = async (
   res,
   next
 ) => {
-  const users: {
-    prof: object & {
-      username: string;
-      phone: string;
-      email: string;
-    };
-    passwd: string;
-    roleId: Types.ObjectId;
-    active?: boolean;
-  }[] = req.body;
+  const {
+    users,
+  }: {
+    users: {
+      prof: object & {
+        username: string;
+        phone: string;
+        email: string;
+      };
+      passwd: string;
+      roleId: Types.ObjectId;
+      active?: boolean;
+    }[];
+  } = req.body;
   try {
     const [isDupl, numRoles] = await Promise.all([
       User.exists({

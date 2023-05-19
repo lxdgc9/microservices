@@ -36,7 +36,27 @@ r.route("/")
     newUser
   );
 r.route("/many")
-  .post(validate(), guard(), newUsers)
+  .post(
+    validate(
+      body("users")
+        .notEmpty()
+        .isArray()
+        .isLength({ min: 1 }),
+      body("users.*.prof").notEmpty().isObject(),
+      body("users.*.passwd").notEmpty().isStrongPassword({
+        minLength: 6,
+        minSymbols: 0,
+        minLowercase: 0,
+        minUppercase: 0,
+      }),
+      body("users.*.roleId").notEmpty().isMongoId(),
+      body("users.*.active")
+        .isBoolean()
+        .optional({ values: "falsy" })
+    ),
+    guard(MNG_CODE.NEW_USER),
+    newUsers
+  )
   .delete(
     validate(
       body("userIds")
