@@ -11,6 +11,7 @@ export const getClasses: RequestHandler = async (
     const classes = await Class.find(
       cursor ? { _id: { $lt: cursor } } : {}
     )
+      .sort({ _id: -1 })
       .limit(parseInt(size.toString()))
       .populate("unit");
     res.json({ classes });

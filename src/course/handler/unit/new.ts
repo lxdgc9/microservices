@@ -21,20 +21,21 @@ export const newUnit: RequestHandler = async (
   } = req.body;
 
   try {
-    if (await Unit.findOne({ code })) {
+    const isDupl = await Unit.exists({ code });
+    if (isDupl) {
       throw new ConflictErr("duplicate unit");
     }
 
-    const unit = new Unit({
+    const newUnit = new Unit({
       code,
       name,
       addr,
       desc,
       logo: req.file && `/api/courses/${req.file.path}`,
     });
-    await unit.save();
+    await newUnit.save();
 
-    res.status(201).json({ unit });
+    res.status(201).json({ unit: newUnit });
   } catch (e) {
     next(e);
     if (req.file) {

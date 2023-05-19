@@ -2,13 +2,16 @@ import { guard, validate } from "@lxdgc9/pkg/dist/middie";
 import { MNG_CODE } from "@lxdgc9/pkg/dist/perm";
 import { Router } from "express";
 import { body, param } from "express-validator";
+import { Types } from "mongoose";
 import { delUser } from "../handler/del";
+import { delUsers } from "../handler/del-s";
 import { getUsers } from "../handler/get";
 import { getUser } from "../handler/get-id";
 import { login } from "../handler/login";
 import { modUser } from "../handler/mod";
 import { modPasswd } from "../handler/mod-pass";
 import { newUser } from "../handler/new";
+import { newUsers } from "../handler/new-s";
 import { rtk } from "../handler/rtk";
 
 export const r = Router();
@@ -20,9 +23,9 @@ r.route("/")
       body("prof").notEmpty().isObject(),
       body("passwd").notEmpty().isStrongPassword({
         minLength: 6,
+        minSymbols: 0,
         minLowercase: 0,
         minUppercase: 0,
-        minSymbols: 0,
       }),
       body("roleId").notEmpty().isMongoId(),
       body("active")
@@ -31,6 +34,32 @@ r.route("/")
     ),
     guard(MNG_CODE.NEW_USER),
     newUser
+  );
+r.route("/many")
+  .post(validate(), guard(), newUsers)
+  .delete(
+    validate(
+      body("userIds")
+        .notEmpty()
+        .isArray()
+        .custom((ids) => {
+          if (ids) {
+            if (!ids.length) {
+              throw new Error("invalid ObjectId in array");
+            }
+
+            const isValid = ids.every((id: string) =>
+              Types.ObjectId.isValid(id)
+            );
+            if (!isValid) {
+              throw new Error("invalid ObjectId in array");
+            }
+          }
+          return true;
+        })
+    ),
+    guard(MNG_CODE.DEL_USER),
+    delUsers
   );
 r.route("/:id")
   .get(
@@ -77,9 +106,9 @@ r.patch(
     body("oldPasswd").notEmpty(),
     body("newPasswd").notEmpty().isStrongPassword({
       minLength: 6,
+      minSymbols: 0,
       minLowercase: 0,
       minUppercase: 0,
-      minSymbols: 0,
     })
   ),
   guard(MNG_CODE.MOD_USER),

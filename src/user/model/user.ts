@@ -72,4 +72,16 @@ schema.pre("save", async function (next) {
   }
 });
 
+schema.pre("insertMany", async function (next, users) {
+  try {
+    const salt = await genSalt(10);
+    for (const u of users) {
+      u.passwd = await hash(u.passwd, salt);
+    }
+    next();
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 export const User = model<IUser>("user", schema);

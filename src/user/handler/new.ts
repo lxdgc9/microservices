@@ -31,7 +31,7 @@ export const newUser: RequestHandler = async (
     active?: boolean;
   } = req.body;
   try {
-    const [isDupl, existRole] = await Promise.all([
+    const [isDupl, exRole] = await Promise.all([
       User.exists({
         $or: [
           {
@@ -67,7 +67,7 @@ export const newUser: RequestHandler = async (
         "duplicate username, phone or email"
       );
     }
-    if (!existRole) {
+    if (!exRole) {
       throw new BadReqErr("role doesn't exist");
     }
 

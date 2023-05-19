@@ -1,7 +1,9 @@
+import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { Class } from "../../../model/class";
 import { Unit } from "../../../model/unit";
+import { User } from "../../../model/user";
 
 export const newClass: RequestHandler = async (
   req,
@@ -18,6 +20,21 @@ export const newClass: RequestHandler = async (
     memberIds: Types.ObjectId[];
   } = req.body;
   try {
+    const [exitUnit, numMembers] = await Promise.all([
+      Unit.exists({ _id: unit }),
+      User.find({
+        _id: {
+          $in: memberIds,
+        },
+      }),
+    ]);
+    if (!exitUnit) {
+      throw new BadReqErr("unit doesn't exist");
+    }
+    if (numMembers) {
+      throw new BadReqErr("memberIds doesn't match");
+    }
+
     const newClass = new Class({
       name,
       unit,
@@ -31,8 +48,8 @@ export const newClass: RequestHandler = async (
           path: "unit",
           select: "classes",
         })
-        .then((doc) =>
-          res.status(201).json({ class: doc })
+        .then((_class) =>
+          res.status(201).json({ class: _class })
         ),
       Unit.findByIdAndUpdate(newClass.unit, {
         $addToSet: {
