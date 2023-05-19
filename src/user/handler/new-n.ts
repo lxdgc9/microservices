@@ -1,17 +1,10 @@
-import {
-  BadReqErr,
-  ConflictErr,
-} from "@lxdgc9/pkg/dist/err";
+import { BadReqErr, ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { Role } from "../model/role";
 import { User } from "../model/user";
 
-export const newUsers: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newUsers: RequestHandler = async (req, res, next) => {
   const {
     users,
   }: {
@@ -62,21 +55,13 @@ export const newUsers: RequestHandler = async (
     ]);
     if (
       isDupl ||
-      [...new Set(users.map((u) => u.prof.username))]
-        .length < users.length ||
-      [...new Set(users.map((u) => u.prof.phone))].length <
-        users.length ||
-      [...new Set(users.map((u) => u.prof.email))].length <
-        users.length
+      [...new Set(users.map((u) => u.prof.username))].length < users.length ||
+      [...new Set(users.map((u) => u.prof.phone))].length < users.length ||
+      [...new Set(users.map((u) => u.prof.email))].length < users.length
     ) {
-      throw new ConflictErr(
-        "duplicate username, phone or email"
-      );
+      throw new ConflictErr("duplicate username, phone or email");
     }
-    if (
-      numRoles <
-      [...new Set(users.map((u) => u.roleId))].length
-    ) {
+    if (numRoles < [...new Set(users.map((u) => u.roleId))].length) {
       throw new BadReqErr("roleIds doesn't match");
     }
 

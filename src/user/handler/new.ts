@@ -1,7 +1,4 @@
-import {
-  BadReqErr,
-  ConflictErr,
-} from "@lxdgc9/pkg/dist/err";
+import { BadReqErr, ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../event/publisher/log";
@@ -10,11 +7,7 @@ import { Role } from "../model/role";
 import { User } from "../model/user";
 import { nats } from "../nats";
 
-export const newUser: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newUser: RequestHandler = async (req, res, next) => {
   const {
     prof,
     passwd,
@@ -63,12 +56,10 @@ export const newUser: RequestHandler = async (
       Role.exists({ _id: roleId }),
     ]);
     if (isDupl) {
-      throw new ConflictErr(
-        "duplicate username, phone or email"
-      );
+      throw new ConflictErr("duplicate username, phone or email");
     }
     if (!exRole) {
-      throw new BadReqErr("role doesn't exist");
+      throw new BadReqErr("role not found");
     }
 
     const newUser = new User({

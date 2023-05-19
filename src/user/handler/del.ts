@@ -18,7 +18,7 @@ export const delUser: RequestHandler = async (
       throw new BadReqErr("user doesn't exist");
     }
 
-    res.json({ msg: "delete successfully" });
+    res.json({ msg: "user deleted" });
 
     await Promise.all([
       new DelUserPublisher(nats.cli).publish(user._id),

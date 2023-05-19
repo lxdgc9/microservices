@@ -14,15 +14,14 @@ export const r = Router();
 r.route("/")
   .get(guard(MNG_CODE.GET_ROLE), getRoles)
   .post(
+    guard(MNG_CODE.NEW_ROLE),
     validate(
       body("name").notEmpty(),
       body("permIds")
         .isArray()
         .custom((v) => {
           if (v) {
-            const isValid = v.every((id: string) =>
-              Types.ObjectId.isValid(id)
-            );
+            const isValid = v.every((id: string) => Types.ObjectId.isValid(id));
             if (!isValid) {
               throw new Error("invalid ObjectId in array");
             }
@@ -30,16 +29,12 @@ r.route("/")
           return true;
         })
     ),
-    guard(MNG_CODE.NEW_ROLE),
     newRole
   );
 r.route("/:id")
-  .get(
-    validate(param("id").isMongoId()),
-    guard(MNG_CODE.GET_ROLE),
-    getRole
-  )
+  .get(guard(MNG_CODE.GET_ROLE), validate(param("id").isMongoId()), getRole)
   .patch(
+    guard(MNG_CODE.MOD_ROLE),
     validate(
       param("id").isMongoId(),
       body("permIds")
@@ -47,9 +42,7 @@ r.route("/:id")
         .isArray()
         .custom((v) => {
           if (v) {
-            const isValid = v.every((id: string) =>
-              Types.ObjectId.isValid(id)
-            );
+            const isValid = v.every((id: string) => Types.ObjectId.isValid(id));
             if (!isValid) {
               throw new Error("invalid ObjectId in array");
             }
@@ -57,11 +50,6 @@ r.route("/:id")
           return true;
         })
     ),
-    guard(MNG_CODE.MOD_ROLE),
     modRole
   )
-  .delete(
-    validate(param("id").isMongoId()),
-    guard(MNG_CODE.DEL_ROLE),
-    delRole
-  );
+  .delete(guard(MNG_CODE.DEL_ROLE), validate(param("id").isMongoId()), delRole);

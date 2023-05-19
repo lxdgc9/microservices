@@ -1,23 +1,26 @@
+import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { User } from "../model/user";
 
-export const getUsers: RequestHandler = async (
+export const getUser: RequestHandler = async (
   req,
   res,
   next
 ) => {
-  const { cursor, size = 0 } = req.query;
   try {
-    const users = await User.find(
-      cursor ? { _id: { $lt: cursor } } : {}
-    )
-      .sort({ _id: -1 })
-      .limit(parseInt(size.toString()))
-      .populate({
-        path: "role",
-        select: "-perms",
-      });
-    res.json({ users });
+    const user = await User.findById(
+      req.params.id
+    ).populate({
+      path: "role",
+      populate: {
+        path: "perms",
+        select: "-group",
+      },
+    });
+    if (!user) {
+      throw new NotFoundErr("user not found");
+    }
+    res.json({ user });
   } catch (e) {
     next(e);
   }

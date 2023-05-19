@@ -17,18 +17,13 @@ export const r = Router();
 
 r.route("/group")
   .get(guard(MNG_CODE.GET_PERM), getGroup)
-  .post(
-    validate(body("name").notEmpty()),
-    guard(MNG_CODE.NEW_PERM),
-    newGroup
-  );
+  .post(guard(MNG_CODE.NEW_PERM), validate(body("name").notEmpty()), newGroup);
 r.route("/group/:id")
   .patch(
+    guard(MNG_CODE.MOD_PERM),
     validate(
       param("id").isMongoId(),
-      body("name")
-        .optional({ values: "null" })
-        .isLength({ min: 1, max: 255 }),
+      body("name").optional({ values: "null" }).isLength({ min: 1, max: 255 }),
       body("permIds")
         .optional({ values: "undefined" })
         .isArray()
@@ -44,50 +39,34 @@ r.route("/group/:id")
           return true;
         })
     ),
-    guard(MNG_CODE.MOD_PERM),
     modGroup
   )
   .delete(
-    validate(param("id").isMongoId()),
     guard(MNG_CODE.DEL_PERM),
+    validate(param("id").isMongoId()),
     delGroup
   );
 r.route("/")
   .get(guard(MNG_CODE.GET_PERM), getPerms)
   .post(
+    guard(MNG_CODE.NEW_PERM),
     validate(
       body("code").notEmpty(),
       body("desc").notEmpty(),
       body("groupId").notEmpty().isMongoId()
     ),
-    guard(MNG_CODE.NEW_PERM),
     newPerm
   )
-  .put(
-    validate(),
-    guard(MNG_CODE.NEW_PERM, MNG_CODE.MOD_PERM)
-  );
+  .put(guard(MNG_CODE.NEW_PERM, MNG_CODE.MOD_PERM), validate());
 r.route("/:id")
-  .get(
-    validate(param("id").isMongoId()),
-    guard(MNG_CODE.GET_PERM),
-    getPermById
-  )
+  .get(guard(MNG_CODE.GET_PERM), validate(param("id").isMongoId()), getPermById)
   .patch(
+    guard(MNG_CODE.MOD_PERM),
     validate(
       param("id").isMongoId(),
-      body("desc")
-        .isLength({ min: 1, max: 255 })
-        .optional({ values: "falsy" }),
-      body("groupId")
-        .isMongoId()
-        .optional({ values: "falsy" })
+      body("desc").isLength({ min: 1, max: 255 }).optional({ values: "falsy" }),
+      body("groupId").isMongoId().optional({ values: "falsy" })
     ),
-    guard(MNG_CODE.MOD_PERM),
     modPerm
   )
-  .delete(
-    validate(param("id").isMongoId()),
-    guard(MNG_CODE.DEL_PERM),
-    delPerm
-  );
+  .delete(guard(MNG_CODE.DEL_PERM), validate(param("id").isMongoId()), delPerm);

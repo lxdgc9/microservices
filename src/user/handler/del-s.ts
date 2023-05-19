@@ -21,7 +21,7 @@ export const delUsers: RequestHandler = async (
       _id: { $in: userIds },
     });
     if (users.length < userIds.length) {
-      throw new BadReqErr("userIds doesn't match");
+      throw new BadReqErr("users missmatch");
     }
 
     await User.deleteMany({ _id: userIds });
@@ -37,7 +37,7 @@ export const delUsers: RequestHandler = async (
       }),
     ]);
 
-    res.json({ msg: "delete users successfully" });
+    res.json({ msg: "users deleted" });
   } catch (e) {
     next(e);
   }
