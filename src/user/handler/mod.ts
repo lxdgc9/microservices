@@ -24,7 +24,7 @@ export const modUser: RequestHandler = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      throw new BadReqErr("user doesn't exist");
+      throw new BadReqErr("user not found");
     }
 
     const [isDupl, existRole] = await Promise.all([
@@ -65,7 +65,7 @@ export const modUser: RequestHandler = async (req, res, next) => {
       throw new ConflictErr("duplicate username, phone or email");
     }
     if (roleId && !existRole) {
-      throw new BadReqErr("role doesn't exist");
+      throw new BadReqErr("role not found");
     }
 
     const updUser = await User.findByIdAndUpdate(

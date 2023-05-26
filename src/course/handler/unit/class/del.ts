@@ -14,17 +14,13 @@ export const delClass: RequestHandler = async (req, res, next) => {
     res.json({ msg: "deleted class" });
 
     await Promise.all([
-      Unit.findOneAndUpdate(_class.unit, {
+      Unit.findByIdAndUpdate(_class.unit, {
         $pull: {
           classes: _class._id,
         },
       }),
       User.deleteMany(
-        {
-          _id: {
-            $in: _class.members,
-          },
-        },
+        { _id: { $in: _class.members } },
         {
           $pull: {
             classes: _class._id,

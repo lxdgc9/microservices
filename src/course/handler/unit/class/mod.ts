@@ -64,9 +64,7 @@ export const modClass: RequestHandler = async (req, res, next) => {
       select: "-classes",
     });
 
-    res.json({
-      _class: updClass,
-    });
+    res.json({ _class: updClass });
   } catch (e) {
     next(e);
   }

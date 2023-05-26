@@ -21,7 +21,7 @@ export const newRole: RequestHandler = async (req, res, next) => {
       _id: { $in: permIds },
     });
     if (numPerms < permIds.length) {
-      throw new BadReqErr("permIds doesn't match");
+      throw new BadReqErr("permIds mismatch");
     }
 
     const newRole = new Role({

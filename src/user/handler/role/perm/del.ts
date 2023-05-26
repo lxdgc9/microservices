@@ -12,7 +12,7 @@ export const delPerm: RequestHandler = async (req, res, next) => {
       throw new BadReqErr("permission not found");
     }
 
-    res.json({ msg: "permission deleted successfully" });
+    res.json({ msg: "deleted permission" });
 
     await Promise.all([
       PermGr.findByIdAndUpdate(perm.group, {

@@ -15,12 +15,10 @@ import { rtk } from "../handler/rtk";
 
 export const r = Router();
 
-const { GET_USER, NEW_USER, MOD_USER, DEL_USER } = MNG_CODE;
-
 r.route("/")
-  .get(guard(GET_USER), getUsers)
+  .get(guard(MNG_CODE.GET_USER), getUsers)
   .post(
-    guard(NEW_USER),
+    guard(MNG_CODE.NEW_USER),
     validate(
       body("prof").notEmpty().isObject(),
       body("passwd").notEmpty().isStrongPassword({
@@ -37,7 +35,7 @@ r.route("/")
 
 r.route("/many")
   .post(
-    guard(NEW_USER),
+    guard(MNG_CODE.NEW_USER),
     validate(
       body("users").notEmpty().isArray().isLength({ min: 1 }),
       body("users.*.prof").notEmpty().isObject(),
@@ -53,7 +51,7 @@ r.route("/many")
     newUsers
   )
   .delete(
-    guard(DEL_USER),
+    guard(MNG_CODE.DEL_USER),
     validate(
       body("userIds").notEmpty().isArray({ min: 1 }),
       body("userIds.*").isMongoId()
@@ -61,18 +59,18 @@ r.route("/many")
     delUsers
   );
 r.route("/:id")
-  .get(guard(GET_USER), validate(param("id").isMongoId()), getUser)
+  .get(guard(MNG_CODE.GET_USER), validate(param("id").isMongoId()), getUser)
   .patch(
-    guard(MOD_USER),
+    guard(MNG_CODE.MOD_USER),
     validate(
       param("id").isMongoId(),
-      body("prof").optional({ values: "falsy" }).isObject(),
-      body("roleId").optional({ values: "falsy" }).isMongoId(),
-      body("active").optional({ values: "falsy" }).isBoolean()
+      body("prof").optional({ values: "undefined" }).isObject(),
+      body("roleId").optional({ values: "undefined" }).isMongoId(),
+      body("active").optional({ values: "undefined" }).isBoolean()
     ),
     modUser
   )
-  .delete(guard(DEL_USER), validate(param("id").isMongoId()), delUser);
+  .delete(guard(MNG_CODE.DEL_USER), validate(param("id").isMongoId()), delUser);
 
 r.post(
   "/auth",
@@ -88,7 +86,7 @@ r.post("/auth/rtk", validate(body("token").notEmpty()), rtk);
 
 r.patch(
   "/:id/passwd",
-  guard(MOD_USER),
+  guard(MNG_CODE.MOD_USER),
   validate(
     body("oldPasswd").notEmpty(),
     body("newPasswd").notEmpty().isStrongPassword({

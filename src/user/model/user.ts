@@ -56,7 +56,10 @@ const schema = new Schema<IUser>(
   }
 );
 
-schema.index({ "attrs.k": 1, "attrs.v": 1 });
+schema.index({
+  "attrs.k": 1,
+  "attrs.v": 1,
+});
 
 schema.pre("save", async function (next) {
   if (!this.isModified("passwd")) {

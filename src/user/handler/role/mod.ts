@@ -24,10 +24,10 @@ export const modRole: RequestHandler = async (req, res, next) => {
       }).then((perms) => perms),
     ]);
     if (!role) {
-      throw new BadReqErr("role doesn't exist");
+      throw new BadReqErr("role not found");
     }
     if (permIds && numPerms < permIds.length) {
-      throw new BadReqErr("permIds doesn't match");
+      throw new BadReqErr("permIds mismatch");
     }
 
     const updRole = await Role.findByIdAndUpdate(

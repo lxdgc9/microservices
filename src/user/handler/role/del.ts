@@ -8,10 +8,10 @@ export const delRole: RequestHandler = async (req, res, next) => {
   try {
     const role = await Role.findByIdAndDelete(req.params.id);
     if (!role) {
-      throw new BadReqErr("role doesn't exist");
+      throw new BadReqErr("role not found");
     }
 
-    res.json({ msg: "delete successfully" });
+    res.json({ msg: "deleted role" });
 
     await new LogPublisher(nats.cli).publish({
       act: "DEL",

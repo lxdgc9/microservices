@@ -62,9 +62,7 @@ export const newClass: RequestHandler = async (req, res, next) => {
       ),
     ]);
 
-    res.status(201).json({
-      class: _class,
-    });
+    res.status(201).json({ class: _class });
   } catch (e) {
     next(e);
   }

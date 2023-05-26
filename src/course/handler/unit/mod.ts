@@ -36,9 +36,7 @@ export const modUnit: RequestHandler = async (req, res, next) => {
     });
 
     if (req.file && unit.logo) {
-      rmSync(unit.logo.replace("/api/courses/", ""), {
-        force: true,
-      });
+      rmSync(unit.logo.replace("/api/courses/", ""), { force: true });
     }
 
     const detail = await Unit.findById(unit._id);

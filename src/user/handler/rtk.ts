@@ -15,7 +15,7 @@ export const rtk: RequestHandler = async (req, res, next) => {
 
     const storedTk = await redis.get(`rf-tkn.${id}`);
     if (storedTk !== token) {
-      throw new UnauthorizedErr("require login, can't refresh token");
+      throw new UnauthorizedErr("can't refresh token, require login");
     }
 
     const user = await User.findById(id).populate<{
@@ -32,7 +32,7 @@ export const rtk: RequestHandler = async (req, res, next) => {
       },
     });
     if (!user) {
-      throw new UnauthorizedErr("user doesn't exist");
+      throw new UnauthorizedErr("user not found");
     }
 
     const atk = sign(
@@ -53,9 +53,7 @@ export const rtk: RequestHandler = async (req, res, next) => {
       refreshToken: rtk,
     });
 
-    await redis.set(`rf-tkn.${id}`, rtk, {
-      EX: 36288001,
-    });
+    await redis.set(`rf-tkn.${id}`, rtk, { EX: 36288001 });
   } catch (e) {
     next(e);
   }

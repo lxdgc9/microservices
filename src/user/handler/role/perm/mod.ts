@@ -19,7 +19,7 @@ export const modPerm: RequestHandler = async (req, res, next) => {
   try {
     const perm = await Perm.findById(req.params.id);
     if (!perm) {
-      throw new BadReqErr("permission doesn't exist");
+      throw new BadReqErr("permission not found");
     }
 
     const [isDupl, existGr] = await Promise.all([
@@ -30,7 +30,7 @@ export const modPerm: RequestHandler = async (req, res, next) => {
       throw new ConflictErr("code duplicated");
     }
     if (groupId && !existGr) {
-      throw new BadReqErr("permission group doesn't exist");
+      throw new BadReqErr("group not found");
     }
 
     if (groupId && !perm.group.equals(groupId)) {

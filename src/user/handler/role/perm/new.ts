@@ -8,18 +8,18 @@ import { nats } from "../../../nats";
 
 export const newPerm: RequestHandler = async (req, res, next) => {
   const {
-    code: code,
-    description: desc,
-    groupId: grpId,
+    code,
+    desc,
+    groupId,
   }: {
     code: string;
-    description: string;
+    desc: string;
     groupId: Types.ObjectId;
   } = req.body;
   try {
     const [isDupl, group] = await Promise.all([
       Perm.exists({ code }),
-      PermGr.findById(grpId),
+      PermGr.findById(groupId),
     ]);
     if (isDupl) {
       throw new ConflictErr("duplicate code");
@@ -31,7 +31,7 @@ export const newPerm: RequestHandler = async (req, res, next) => {
     const newPerm = new Perm({
       code,
       desc,
-      group: grpId,
+      group: groupId,
     });
     await Promise.all([
       newPerm.save(),

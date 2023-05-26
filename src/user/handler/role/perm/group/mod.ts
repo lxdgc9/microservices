@@ -15,7 +15,7 @@ export const modGroup: RequestHandler = async (req, res, next) => {
     permIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [group, numGroups] = await Promise.all([
+    const [group, numGrps] = await Promise.all([
       PermGr.findById(req.params.id),
       Perm.countDocuments({
         _id: {
@@ -26,7 +26,7 @@ export const modGroup: RequestHandler = async (req, res, next) => {
     if (!group) {
       throw new BadReqErr("group not found");
     }
-    if (permIds && numGroups < permIds.length) {
+    if (permIds && numGrps < permIds.length) {
       throw new BadReqErr("permIds mismatch");
     }
 

@@ -15,7 +15,6 @@ export const newUnit: RequestHandler = async (req, res, next) => {
     addr?: string;
     desc?: string;
   } = req.body;
-
   try {
     const isDupl = await Unit.exists({ code });
     if (isDupl) {

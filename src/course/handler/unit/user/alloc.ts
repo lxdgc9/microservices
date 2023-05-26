@@ -14,12 +14,8 @@ export const allocUsers: RequestHandler = async (req, res, next) => {
   } = req.body;
   try {
     const [numUserIds, numClassIds] = await Promise.all([
-      User.countDocuments({
-        _id: { $in: userIds },
-      }),
-      Class.countDocuments({
-        _id: { $in: classIds },
-      }),
+      User.countDocuments({ _id: { $in: userIds } }),
+      Class.countDocuments({ _id: { $in: classIds } }),
     ]);
     if (numUserIds < userIds.length) {
       throw new BadReqErr("userIds mismatch");
@@ -30,11 +26,7 @@ export const allocUsers: RequestHandler = async (req, res, next) => {
 
     await Promise.all([
       User.updateMany(
-        {
-          _id: {
-            $in: userIds,
-          },
-        },
+        { _id: { $in: userIds } },
         {
           $addToSet: {
             classes: classIds,

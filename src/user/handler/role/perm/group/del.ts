@@ -12,7 +12,7 @@ export const delGroup: RequestHandler = async (req, res, next) => {
       throw new BadReqErr("group not found");
     }
 
-    res.json({ msg: "group deleted successfully!" });
+    res.json({ msg: "deleted group" });
 
     await Promise.all([
       Perm.deleteMany({ _id: group.perms }),

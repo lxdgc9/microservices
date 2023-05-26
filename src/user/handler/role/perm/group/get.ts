@@ -3,8 +3,7 @@ import { PermGr } from "../../../../model/perm-gr";
 
 export const getGroup: RequestHandler = async (_req, res, next) => {
   try {
-    const group = await PermGr.find().select("-perms");
-    res.json({ group });
+    res.json({ group: await PermGr.find().select("-perms") });
   } catch (e) {
     next(e);
   }
