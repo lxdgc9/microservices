@@ -5,20 +5,14 @@ import { DelUserPublisher } from "../event/publisher/user/del";
 import { User } from "../model/user";
 import { nats } from "../nats";
 
-export const delUser: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const delUser: RequestHandler = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndDelete(
-      req.params.id
-    );
+    const user = await User.findByIdAndDelete(req.params.id);
     if (!user) {
-      throw new BadReqErr("user doesn't exist");
+      throw new BadReqErr("user not found");
     }
 
-    res.json({ msg: "user deleted" });
+    res.json({ msg: "deleted user" });
 
     await Promise.all([
       new DelUserPublisher(nats.cli).publish(user._id),

@@ -5,11 +5,7 @@ import { Class } from "../../../model/class";
 import { Unit } from "../../../model/unit";
 import { User } from "../../../model/user";
 
-export const modClass: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modClass: RequestHandler = async (req, res, next) => {
   const {
     name,
     unitId,
@@ -20,27 +16,23 @@ export const modClass: RequestHandler = async (
     memberIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [_class, existUnit, numMembers] =
-      await Promise.all([
-        Class.findById(req.params.id),
-        Unit.exists({ _id: unitId }),
-        User.countDocuments({
-          _id: {
-            $in: memberIds,
-          },
-        }),
-      ]);
+    const [_class, exUnit, numMembers] = await Promise.all([
+      Class.findById(req.params.id),
+      Unit.exists({ _id: unitId }),
+      User.countDocuments({
+        _id: {
+          $in: memberIds,
+        },
+      }),
+    ]);
     if (!_class) {
-      throw new BadReqErr("class doesn't exist");
+      throw new BadReqErr("class not found");
     }
-    if (unitId && !existUnit) {
-      throw new BadReqErr("unit doesn't exist");
+    if (unitId && !exUnit) {
+      throw new BadReqErr("unit not found");
     }
-    if (
-      memberIds?.length &&
-      numMembers < memberIds.length
-    ) {
-      throw new BadReqErr("memberIds doesn't match");
+    if (memberIds?.length && numMembers < memberIds.length) {
+      throw new BadReqErr("memberIds mismatch");
     }
 
     await Promise.all([
@@ -67,14 +59,14 @@ export const modClass: RequestHandler = async (
         ]),
     ]);
 
-    const updClass = await Class.findById(
-      _class._id
-    ).populate({
+    const updClass = await Class.findById(_class._id).populate({
       path: "unit",
       select: "-classes",
     });
 
-    res.json({ _class: updClass });
+    res.json({
+      _class: updClass,
+    });
   } catch (e) {
     next(e);
   }

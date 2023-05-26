@@ -27,10 +27,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@lxdgc9/pkg@^1.0.58":
-  version "1.0.58"
-  resolved "https://npm.pkg.github.com/download/@lxdgc9/pkg/1.0.58/77c36946714213ffd8f8a3be68bcad6e58e54c99#77c36946714213ffd8f8a3be68bcad6e58e54c99"
-  integrity sha512-BI8erVUGzoBjyiuz15rmj3Ozi+ITpYrfXhuLuvrr6uspmLMeOgcSQ0N4Ibe9ExPYzZD5p6amyETf+Zt1xdnINg==
+"@lxdgc9/pkg@^1.0.62":
+  version "1.0.62"
+  resolved "https://npm.pkg.github.com/download/@lxdgc9/pkg/1.0.62/b46cd9022ebdf0bac6b84ad744580bcf67d02072#b46cd9022ebdf0bac6b84ad744580bcf67d02072"
+  integrity sha512-CnpEPLHzboQTIeA2aQ/fkpqoh+JWzfnSRhe4ehpEExV3Uj6lrOK0dFjhFS+ZgVBC9tzT1XKKlMZlTRQgZAUnmg==
   dependencies:
     express "^4.18.2"
     express-validator "^7.0.1"
@@ -893,6 +893,11 @@ picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
+
+prettier@^2.8.8:
+  version "2.8.8"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.8.tgz#e8c5d7e98a4305ffe3de2e1fc4aca1a71c28b1da"
+  integrity sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"

@@ -3,11 +3,7 @@ import { RequestHandler } from "express";
 import { rmSync } from "fs";
 import { Unit } from "../../model/unit";
 
-export const newUnit: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newUnit: RequestHandler = async (req, res, next) => {
   const {
     code,
     name,

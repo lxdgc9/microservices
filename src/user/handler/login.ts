@@ -5,11 +5,7 @@ import { sign } from "jsonwebtoken";
 import { User } from "../model/user";
 import { redis } from "../redis";
 
-export const login: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const login: RequestHandler = async (req, res, next) => {
   const {
     k,
     v,
@@ -38,11 +34,11 @@ export const login: RequestHandler = async (
       },
     });
     if (!user) {
-      throw new UnauthorizedErr("user doesn't exist");
+      throw new UnauthorizedErr("user not found");
     }
 
-    const passMatch = await compare(passwd, user.passwd);
-    if (!passMatch) {
+    const match = await compare(passwd, user.passwd);
+    if (!match) {
       throw new UnauthorizedErr("wrong password");
     }
 
@@ -55,11 +51,9 @@ export const login: RequestHandler = async (
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
-    const rtk = sign(
-      { id: user._id },
-      process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: 36288000 }
-    );
+    const rtk = sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET!, {
+      expiresIn: 2592000,
+    });
 
     res.json({
       user,
@@ -67,9 +61,7 @@ export const login: RequestHandler = async (
       refreshToken: rtk,
     });
 
-    await redis.set(`rf-tkn.${user._id}`, rtk, {
-      EX: 36288001,
-    });
+    await redis.set(`rf-tkn.${user._id}`, rtk, { EX: 2592001 });
   } catch (e) {
     next(e);
   }

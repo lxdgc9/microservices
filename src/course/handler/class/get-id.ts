@@ -2,11 +2,7 @@ import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Class } from "../../model/class";
 
-export const getClass: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const getClass: RequestHandler = async (req, res, next) => {
   try {
     const _class = await Class.findById(req.params.id);
     if (!_class) {

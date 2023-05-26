@@ -3,6 +3,7 @@ import { Schema, Types, model } from "mongoose";
 interface IUser {
   userId: Types.ObjectId;
   obj: any;
+  classes: Types.ObjectId[];
 }
 
 const schema = new Schema<IUser>(
@@ -16,6 +17,12 @@ const schema = new Schema<IUser>(
       type: Schema.Types.Mixed,
       required: true,
     },
+    classes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+    ],
   },
   {
     timestamps: true,

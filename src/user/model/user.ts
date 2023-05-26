@@ -44,8 +44,7 @@ const schema = new Schema<IUser>(
       transform(_doc, ret, _opts) {
         ret.prof = {};
         ret.attrs.forEach(
-          ({ k, v }: { k: string; v: string }) =>
-            (ret.prof[k] = v)
+          ({ k, v }: { k: string; v: string }) => (ret.prof[k] = v)
         );
 
         delete ret._id;

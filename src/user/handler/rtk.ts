@@ -5,11 +5,7 @@ import { sign, verify } from "jsonwebtoken";
 import { User } from "../model/user";
 import { redis } from "../redis";
 
-export const rtk: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const rtk: RequestHandler = async (req, res, next) => {
   const { token }: { token: string } = req.body;
   try {
     const { id } = verify(
@@ -19,9 +15,7 @@ export const rtk: RequestHandler = async (
 
     const storedTk = await redis.get(`rf-tkn.${id}`);
     if (storedTk !== token) {
-      throw new UnauthorizedErr(
-        "require login, can't refresh token"
-      );
+      throw new UnauthorizedErr("require login, can't refresh token");
     }
 
     const user = await User.findById(id).populate<{
@@ -50,11 +44,9 @@ export const rtk: RequestHandler = async (
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }
     );
-    const rtk = sign(
-      { id: user._id },
-      process.env.REFRESH_TOKEN_SECRET!,
-      { expiresIn: 36288000 }
-    );
+    const rtk = sign({ id: user._id }, process.env.REFRESH_TOKEN_SECRET!, {
+      expiresIn: 36288000,
+    });
 
     res.json({
       accessToken: atk,

@@ -5,20 +5,14 @@ import { Perm } from "../../../../model/perm";
 import { PermGr } from "../../../../model/perm-gr";
 import { nats } from "../../../../nats";
 
-export const delGroup: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const delGroup: RequestHandler = async (req, res, next) => {
   try {
-    const group = await PermGr.findByIdAndDelete(
-      req.params.id
-    );
+    const group = await PermGr.findByIdAndDelete(req.params.id);
     if (!group) {
-      throw new BadReqErr("permission group doesn't exist");
+      throw new BadReqErr("group not found");
     }
 
-    res.json({ msg: "delete successfully" });
+    res.json({ msg: "group deleted successfully!" });
 
     await Promise.all([
       Perm.deleteMany({ _id: group.perms }),

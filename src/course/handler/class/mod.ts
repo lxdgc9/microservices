@@ -9,11 +9,7 @@ type Dto = {
   memberIds?: Types.ObjectId[];
 };
 
-export const modClass: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modClass: RequestHandler = async (req, res, next) => {
   const { name, memberIds }: Dto = req.body;
 
   try {
@@ -42,9 +38,7 @@ export const modClass: RequestHandler = async (
       });
     }
 
-    const detail = await Class.findById(
-      _class._id
-    ).populate({
+    const detail = await Class.findById(_class._id).populate({
       path: "members",
       populate: {
         path: "role",

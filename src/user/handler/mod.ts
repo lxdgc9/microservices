@@ -1,7 +1,4 @@
-import {
-  BadReqErr,
-  ConflictErr,
-} from "@lxdgc9/pkg/dist/err";
+import { BadReqErr, ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../event/publisher/log";
@@ -10,11 +7,7 @@ import { Role } from "../model/role";
 import { User } from "../model/user";
 import { nats } from "../nats";
 
-export const modUser: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modUser: RequestHandler = async (req, res, next) => {
   const {
     prof,
     roleId,
@@ -69,9 +62,7 @@ export const modUser: RequestHandler = async (
       Role.exists({ _id: roleId }),
     ]);
     if (prof && isDupl) {
-      throw new ConflictErr(
-        "duplicate username, phone or email"
-      );
+      throw new ConflictErr("duplicate username, phone or email");
     }
     if (roleId && !existRole) {
       throw new BadReqErr("role doesn't exist");
@@ -81,12 +72,10 @@ export const modUser: RequestHandler = async (
       user._id,
       {
         $set: {
-          attrs: Object.entries(prof || {}).map(
-            ([k, v]) => ({
-              k,
-              v,
-            })
-          ),
+          attrs: Object.entries(prof || {}).map(([k, v]) => ({
+            k,
+            v,
+          })),
           role: roleId,
           active,
         },

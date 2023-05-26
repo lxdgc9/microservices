@@ -6,11 +6,7 @@ import { Perm } from "../../../../model/perm";
 import { PermGr } from "../../../../model/perm-gr";
 import { nats } from "../../../../nats";
 
-export const modGroup: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modGroup: RequestHandler = async (req, res, next) => {
   const {
     name,
     permIds,
@@ -19,7 +15,7 @@ export const modGroup: RequestHandler = async (
     permIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [group, numGrps] = await Promise.all([
+    const [group, numGroups] = await Promise.all([
       PermGr.findById(req.params.id),
       Perm.countDocuments({
         _id: {
@@ -28,10 +24,10 @@ export const modGroup: RequestHandler = async (
       }),
     ]);
     if (!group) {
-      throw new BadReqErr("permission group doesn't exist");
+      throw new BadReqErr("group not found");
     }
-    if (permIds && numGrps < permIds.length) {
-      throw new Error("permIds doesn't match");
+    if (permIds && numGroups < permIds.length) {
+      throw new BadReqErr("permIds mismatch");
     }
 
     await Promise.all([
@@ -43,13 +39,11 @@ export const modGroup: RequestHandler = async (
       }),
       permIds &&
         Perm.deleteMany({
-          _id: group.perms.filter(
-            (p) => !permIds.includes(p)
-          ),
+          _id: group.perms.filter((p) => !permIds.includes(p)),
         }),
     ]);
 
-    const [updGrp] = await Promise.all([
+    const [updGroup] = await Promise.all([
       PermGr.findById(group._id).populate({
         path: "perms",
         select: "-group",
@@ -63,7 +57,7 @@ export const modGroup: RequestHandler = async (
       }),
     ]);
 
-    res.json({ group: updGrp });
+    res.json({ group: updGroup });
   } catch (e) {
     next(e);
   }

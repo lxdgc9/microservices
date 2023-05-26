@@ -4,11 +4,7 @@ import { Types } from "mongoose";
 import { Class } from "../../model/class";
 import { User } from "../../model/user";
 
-export const newClass: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newClass: RequestHandler = async (req, res, next) => {
   const {
     name,
     unit,
@@ -19,11 +15,11 @@ export const newClass: RequestHandler = async (
     memberIds: Types.ObjectId[];
   } = req.body;
   try {
-    const numMems = await User.countDocuments({
+    const numMembers = await User.countDocuments({
       _id: { $in: memberIds },
     });
-    if (numMems < memberIds.length) {
-      throw new BadReqErr("memberIds doesn't match");
+    if (numMembers < memberIds.length) {
+      throw new BadReqErr("memberIds mismatch");
     }
 
     const newClass = new Class({
@@ -33,9 +29,10 @@ export const newClass: RequestHandler = async (
     });
     await newClass.save();
 
-    const _class = await Class.findById(
-      newClass._id
-    ).populate("unit");
+    const _class = await Class.findById(newClass._id).populate({
+      path: "unit",
+      select: "-classes",
+    });
 
     res.status(201).json({ class: _class });
   } catch (e) {

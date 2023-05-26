@@ -5,11 +5,7 @@ import { Class } from "../../../model/class";
 import { Unit } from "../../../model/unit";
 import { User } from "../../../model/user";
 
-export const newClass: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newClass: RequestHandler = async (req, res, next) => {
   const {
     name,
     unit,
@@ -17,22 +13,22 @@ export const newClass: RequestHandler = async (
   }: {
     name: string;
     unit: string;
-    memberIds: Types.ObjectId[];
+    memberIds?: Types.ObjectId[];
   } = req.body;
   try {
-    const [exitUnit, numMembers] = await Promise.all([
+    const [exUnit, numMembers] = await Promise.all([
       Unit.exists({ _id: unit }),
-      User.find({
+      User.countDocuments({
         _id: {
           $in: memberIds,
         },
       }),
     ]);
-    if (!exitUnit) {
-      throw new BadReqErr("unit doesn't exist");
+    if (!exUnit) {
+      throw new BadReqErr("unit not found");
     }
-    if (numMembers) {
-      throw new BadReqErr("memberIds doesn't match");
+    if (memberIds && numMembers < memberIds.length) {
+      throw new BadReqErr("memberIds mismatch");
     }
 
     const newClass = new Class({
@@ -42,21 +38,33 @@ export const newClass: RequestHandler = async (
     });
     await newClass.save();
 
-    await Promise.all([
-      Class.findById(newClass._id)
-        .populate({
-          path: "unit",
-          select: "classes",
-        })
-        .then((_class) =>
-          res.status(201).json({ class: _class })
-        ),
+    const [_class] = await Promise.all([
+      Class.findById(newClass._id).populate({
+        path: "unit",
+        select: "-classes",
+      }),
       Unit.findByIdAndUpdate(newClass.unit, {
         $addToSet: {
           classes: newClass._id,
         },
       }),
+      User.updateMany(
+        {
+          _id: {
+            $in: memberIds,
+          },
+        },
+        {
+          $addToSet: {
+            classes: newClass._id,
+          },
+        }
+      ),
     ]);
+
+    res.status(201).json({
+      class: _class,
+    });
   } catch (e) {
     next(e);
   }

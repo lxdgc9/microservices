@@ -2,15 +2,9 @@ import { NotFoundErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Unit } from "../../model/unit";
 
-export const getUnit: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const getUnit: RequestHandler = async (req, res, next) => {
   try {
-    const unit = await Unit.findById(
-      req.params.id
-    ).populate({
+    const unit = await Unit.findById(req.params.id).populate({
       path: "classes",
       populate: {
         path: "unit",

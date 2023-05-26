@@ -6,11 +6,7 @@ import { DelManyUserPublisher } from "../event/publisher/user/del-s";
 import { User } from "../model/user";
 import { nats } from "../nats";
 
-export const delUsers: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const delUsers: RequestHandler = async (req, res, next) => {
   const {
     userIds,
   }: {
@@ -21,7 +17,7 @@ export const delUsers: RequestHandler = async (
       _id: { $in: userIds },
     });
     if (users.length < userIds.length) {
-      throw new BadReqErr("users missmatch");
+      throw new BadReqErr("userIds mismatch");
     }
 
     await User.deleteMany({ _id: userIds });
@@ -37,7 +33,7 @@ export const delUsers: RequestHandler = async (
       }),
     ]);
 
-    res.json({ msg: "users deleted" });
+    res.json({ msg: "deleted users" });
   } catch (e) {
     next(e);
   }

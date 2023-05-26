@@ -1,7 +1,4 @@
-import {
-  BadReqErr,
-  ConflictErr,
-} from "@lxdgc9/pkg/dist/err";
+import { BadReqErr, ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../../../event/publisher/log";
@@ -9,36 +6,32 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 import { nats } from "../../../nats";
 
-export const newPerm: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newPerm: RequestHandler = async (req, res, next) => {
   const {
-    code,
-    desc,
-    groupId,
+    code: code,
+    description: desc,
+    groupId: grpId,
   }: {
     code: string;
-    desc: string;
+    description: string;
     groupId: Types.ObjectId;
   } = req.body;
   try {
     const [isDupl, group] = await Promise.all([
       Perm.exists({ code }),
-      PermGr.findById(groupId),
+      PermGr.findById(grpId),
     ]);
     if (isDupl) {
       throw new ConflictErr("duplicate code");
     }
     if (!group) {
-      throw new BadReqErr("permission group doesn't exist");
+      throw new BadReqErr("group not found");
     }
 
     const newPerm = new Perm({
       code,
       desc,
-      group: groupId,
+      group: grpId,
     });
     await Promise.all([
       newPerm.save(),
@@ -54,7 +47,9 @@ export const newPerm: RequestHandler = async (
       select: "-perms",
     });
 
-    res.status(201).send({ perm });
+    res.status(201).send({
+      permission: perm,
+    });
 
     await new LogPublisher(nats.cli).publish({
       act: "NEW",

@@ -1,7 +1,4 @@
-import {
-  BadReqErr,
-  ConflictErr,
-} from "@lxdgc9/pkg/dist/err";
+import { BadReqErr, ConflictErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../../../event/publisher/log";
@@ -9,11 +6,7 @@ import { Perm } from "../../../model/perm";
 import { PermGr } from "../../../model/perm-gr";
 import { nats } from "../../../nats";
 
-export const modPerm: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modPerm: RequestHandler = async (req, res, next) => {
   const {
     code,
     desc,

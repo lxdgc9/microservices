@@ -3,11 +3,7 @@ import { LogPublisher } from "../../../../event/publisher/log";
 import { PermGr } from "../../../../model/perm-gr";
 import { nats } from "../../../../nats";
 
-export const newGroup: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newGroup: RequestHandler = async (req, res, next) => {
   const { name }: { name: string } = req.body;
   try {
     const group = new PermGr({ name });

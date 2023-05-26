@@ -25,23 +25,15 @@ export function guard(...perms: string[]) {
     }
 
     try {
-      req.user = verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET!
-      ) as JwtPayload;
+      req.user = verify(token, process.env.ACCESS_TOKEN_SECRET!) as JwtPayload;
 
       if (!req.user.active) {
         throw new ForbiddenErr("access denied");
       }
 
-      if (!perms.length) {
-        return next();
-      }
-
       if (!req.user.perms.some((p) => perms.includes(p))) {
         throw new ForbiddenErr("permission denied");
       }
-
       next();
     } catch (e) {
       next(e);

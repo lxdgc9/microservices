@@ -1,8 +1,5 @@
 import { RequestHandler } from "express";
-import {
-  ValidationChain,
-  validationResult,
-} from "express-validator";
+import { ValidationChain, validationResult } from "express-validator";
 
 export function validate(...chains: ValidationChain[]) {
   const _: RequestHandler = async (req, res, next) => {

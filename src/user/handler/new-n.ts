@@ -59,10 +59,10 @@ export const newUsers: RequestHandler = async (req, res, next) => {
       [...new Set(users.map((u) => u.prof.phone))].length < users.length ||
       [...new Set(users.map((u) => u.prof.email))].length < users.length
     ) {
-      throw new ConflictErr("duplicate username, phone or email");
+      throw new ConflictErr("duplicate fields");
     }
     if (numRoles < [...new Set(users.map((u) => u.roleId))].length) {
-      throw new BadReqErr("roleIds doesn't match");
+      throw new BadReqErr("roleIds mismatch");
     }
 
     const _users = await User.insertMany(

@@ -3,11 +3,7 @@ import { compare } from "bcryptjs";
 import { RequestHandler } from "express";
 import { User } from "../model/user";
 
-export const modPasswd: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const modPasswd: RequestHandler = async (req, res, next) => {
   const {
     oldPasswd,
     newPasswd,
@@ -18,18 +14,18 @@ export const modPasswd: RequestHandler = async (
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      throw new BadReqErr("user doesn't exist");
+      throw new BadReqErr("user not found");
     }
 
-    const passMatch = await compare(oldPasswd, user.passwd);
-    if (!passMatch) {
+    const match = await compare(oldPasswd, user.passwd);
+    if (!match) {
       throw new BadReqErr("wrong password");
     }
 
     user.passwd = newPasswd;
     await user.save();
 
-    res.json({ msg: "change password successfully" });
+    res.json({ msg: "changed password" });
   } catch (e) {
     next(e);
   }

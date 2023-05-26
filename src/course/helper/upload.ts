@@ -21,14 +21,12 @@ export const uploader = (path: string = "/") => {
       },
       filename(_req, file, cb) {
         if (!file) {
-          console.log("no file received");
           throw new Error("no file received");
         }
 
-        file.originalname = Buffer.from(
-          file.originalname,
-          "latin1"
-        ).toString("utf8");
+        file.originalname = Buffer.from(file.originalname, "latin1").toString(
+          "utf8"
+        );
         cb(null, `${Date.now()}-${file.originalname}`);
       },
     }),

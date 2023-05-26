@@ -6,11 +6,7 @@ import { Perm } from "../../model/perm";
 import { Role } from "../../model/role";
 import { nats } from "../../nats";
 
-export const newRole: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const newRole: RequestHandler = async (req, res, next) => {
   const {
     name,
     level,

@@ -17,13 +17,19 @@ export const r = Router();
 
 r.route("/group")
   .get(guard(MNG_CODE.GET_PERM), getGroup)
-  .post(guard(MNG_CODE.NEW_PERM), validate(body("name").notEmpty()), newGroup);
+  .post(
+    guard(MNG_CODE.NEW_PERM),
+    validate(body("name").notEmpty().isLength({ min: 1, max: 255 })),
+    newGroup
+  );
 r.route("/group/:id")
   .patch(
     guard(MNG_CODE.MOD_PERM),
     validate(
       param("id").isMongoId(),
-      body("name").optional({ values: "null" }).isLength({ min: 1, max: 255 }),
+      body("name")
+        .optional({ values: "undefined" })
+        .isLength({ min: 1, max: 255 }),
       body("permIds")
         .optional({ values: "undefined" })
         .isArray()
@@ -64,8 +70,10 @@ r.route("/:id")
     guard(MNG_CODE.MOD_PERM),
     validate(
       param("id").isMongoId(),
-      body("desc").isLength({ min: 1, max: 255 }).optional({ values: "falsy" }),
-      body("groupId").isMongoId().optional({ values: "falsy" })
+      body("desc")
+        .isLength({ min: 1, max: 255 })
+        .optional({ values: "undefined" }),
+      body("groupId").isMongoId().optional({ values: "undefined" })
     ),
     modPerm
   )
