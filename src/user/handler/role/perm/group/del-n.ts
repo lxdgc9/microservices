@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
-import { PermGr } from "../../../../model/perm-gr";
+import { Group } from "../../../../model/group";
 
 export const delManyGroup: RequestHandler = async (req, res, next) => {
   const {
@@ -9,7 +9,7 @@ export const delManyGroup: RequestHandler = async (req, res, next) => {
     groupIds: Types.ObjectId[];
   } = req.body;
   try {
-    const groups = await PermGr.deleteMany({ _id: groupIds });
+    const groups = await Group.deleteMany({ _id: groupIds });
 
     console.log(groups);
 

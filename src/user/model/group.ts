@@ -2,7 +2,7 @@ import { Schema, Types, model } from "mongoose";
 
 interface IGroup {
   name: string;
-  permission: Types.ObjectId[];
+  permissions: Types.ObjectId[];
 }
 
 const schema = new Schema<IGroup>(
@@ -11,10 +11,10 @@ const schema = new Schema<IGroup>(
       type: String,
       required: true,
     },
-    permission: [
+    permissions: [
       {
         type: Schema.Types.ObjectId,
-        ref: "perm",
+        ref: "permission",
       },
     ],
   },

@@ -2,7 +2,7 @@ import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../../event/publisher/log";
-import { Perm } from "../../model/perm";
+import { Permission } from "../../model/permission";
 import { Role } from "../../model/role";
 import { nats } from "../../nats";
 
@@ -17,7 +17,7 @@ export const newRole: RequestHandler = async (req, res, next) => {
     permIds: Types.ObjectId[];
   } = req.body;
   try {
-    const numPerms = await Perm.countDocuments({
+    const numPerms = await Permission.countDocuments({
       _id: { $in: permIds },
     });
     if (numPerms < permIds.length) {

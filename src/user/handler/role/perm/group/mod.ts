@@ -2,8 +2,8 @@ import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../../../../event/publisher/log";
-import { Perm } from "../../../../model/perm";
-import { PermGr } from "../../../../model/perm-gr";
+import { Group } from "../../../../model/group";
+import { Permission } from "../../../../model/permission";
 import { nats } from "../../../../nats";
 
 export const modGroup: RequestHandler = async (req, res, next) => {
@@ -16,8 +16,8 @@ export const modGroup: RequestHandler = async (req, res, next) => {
   } = req.body;
   try {
     const [group, numGrps] = await Promise.all([
-      PermGr.findById(req.params.id),
-      Perm.countDocuments({
+      Group.findById(req.params.id),
+      Permission.countDocuments({
         _id: {
           $in: permIds,
         },
@@ -34,23 +34,23 @@ export const modGroup: RequestHandler = async (req, res, next) => {
       group.updateOne({
         $set: {
           name,
-          perms: permIds,
+          permissions: permIds,
         },
       }),
       permIds &&
-        Perm.deleteMany({
-          _id: group.perms.filter((p) => !permIds.includes(p)),
+        Permission.deleteMany({
+          _id: group.permissions.filter((p) => !permIds.includes(p)),
         }),
     ]);
 
     const [updGroup] = await Promise.all([
-      PermGr.findById(group._id).populate({
+      Group.findById(group._id).populate({
         path: "perms",
         select: "-group",
       }),
       new LogPublisher(nats.cli).publish({
         act: "MOD",
-        model: PermGr.modelName,
+        model: Group.modelName,
         doc: group,
         userId: req.user?.id,
         status: true,

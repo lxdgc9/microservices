@@ -17,12 +17,12 @@ export const modPasswd: RequestHandler = async (req, res, next) => {
       throw new BadReqErr("user not found");
     }
 
-    const match = await compare(oldPasswd, user.passwd);
+    const match = await compare(oldPasswd, user.password);
     if (!match) {
       throw new BadReqErr("wrong password");
     }
 
-    user.passwd = newPasswd;
+    user.password = newPasswd;
     await user.save();
 
     res.json({ msg: "changed password" });

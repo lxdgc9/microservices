@@ -1,4 +1,4 @@
-export * from "./bad-req";
+export * from "./bad-request";
 export * from "./confict";
 export * from "./forbidden";
 export * from "./http";

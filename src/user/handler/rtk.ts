@@ -39,7 +39,7 @@ export const rtk: RequestHandler = async (req, res, next) => {
       {
         id: user._id,
         perms: user.role.perms.map((p) => p.code),
-        active: user.active,
+        active: user.isActive,
       },
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }

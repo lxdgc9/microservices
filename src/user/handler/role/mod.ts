@@ -2,7 +2,7 @@ import { BadReqErr } from "@lxdgc9/pkg/dist/err";
 import { RequestHandler } from "express";
 import { Types } from "mongoose";
 import { LogPublisher } from "../../event/publisher/log";
-import { Perm } from "../../model/perm";
+import { Permission } from "../../model/permission";
 import { Role } from "../../model/role";
 import { nats } from "../../nats";
 
@@ -19,7 +19,7 @@ export const modRole: RequestHandler = async (req, res, next) => {
   try {
     const [role, numPerms] = await Promise.all([
       Role.findById(req.params.id),
-      Perm.countDocuments({
+      Permission.countDocuments({
         _id: { $in: permIds },
       }).then((perms) => perms),
     ]);
@@ -36,7 +36,7 @@ export const modRole: RequestHandler = async (req, res, next) => {
         $set: {
           name,
           level,
-          perms: permIds,
+          permissions: permIds,
         },
       },
       { new: true }

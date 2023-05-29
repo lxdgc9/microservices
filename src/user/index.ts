@@ -1,4 +1,3 @@
-import { log } from "console";
 import { connect } from "mongoose";
 import { app } from "./app";
 import { nats } from "./nats";
@@ -27,20 +26,22 @@ import { redis } from "./redis";
     );
 
     nats.cli.on("close", () => {
-      log("NATS connection closed!");
+      console.log("NATS connection closed!");
       process.exit();
     });
 
     process.on("SIGINT", () => nats.cli.close());
     process.on("SIGTERM", () => nats.cli.close());
 
-    connect(process.env.MONGO_URI!).then(() => log("Connected to MongoDb"));
+    connect(process.env.MONGO_URI!).then(() =>
+      console.log("Connected to MongoDb")
+    );
 
     await redis.connect();
-    await redis.ping().then(() => log("Connected to Redis"));
+    await redis.ping().then(() => console.log("Connected to Redis"));
   } catch (e) {
-    log(e);
+    console.log(e);
   }
 
-  app.listen(3000, () => log("Listening on port 3000!!!"));
+  app.listen(3000, () => console.log("Listening on port 3000!!!"));
 })();

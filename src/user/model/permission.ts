@@ -1,25 +1,25 @@
 import { Schema, Types, model } from "mongoose";
 
-interface IPerm {
+interface IPermission {
   code: string;
-  desc: string;
+  description: string;
   group: Types.ObjectId;
 }
 
-const schema = new Schema<IPerm>(
+const schema = new Schema<IPermission>(
   {
     code: {
       type: String,
       required: true,
       unique: true,
     },
-    desc: {
+    description: {
       type: String,
       required: true,
     },
     group: {
       type: Schema.Types.ObjectId,
-      ref: "perm-gr",
+      ref: "group",
       required: true,
     },
   },
@@ -34,4 +34,4 @@ const schema = new Schema<IPerm>(
   }
 );
 
-export const Perm = model<IPerm>("perm", schema);
+export const Permission = model<IPermission>("permission", schema);

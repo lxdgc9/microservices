@@ -6,9 +6,9 @@ interface IUser {
     k: string;
     v: string;
   }[];
-  passwd: string;
+  password: string;
   role: Types.ObjectId;
-  active: boolean;
+  isActive: boolean;
 }
 
 const schema = new Schema<IUser>(
@@ -23,7 +23,7 @@ const schema = new Schema<IUser>(
         },
       },
     ],
-    passwd: {
+    password: {
       type: String,
       required: true,
     },
@@ -32,7 +32,7 @@ const schema = new Schema<IUser>(
       ref: "role",
       required: true,
     },
-    active: {
+    isActive: {
       type: Boolean,
       default: true,
     },
@@ -42,7 +42,7 @@ const schema = new Schema<IUser>(
     toJSON: {
       virtuals: true,
       transform(_doc, ret, _opts) {
-        ret.prof = {};
+        ret.profile = {};
         ret.attrs.forEach(
           ({ k, v }: { k: string; v: string }) => (ret.prof[k] = v)
         );
@@ -62,12 +62,13 @@ schema.index({
 });
 
 schema.pre("save", async function (next) {
-  if (!this.isModified("passwd")) {
+  if (!this.isModified("password")) {
     return next();
   }
+
   try {
     const salt = await genSalt(10);
-    this.passwd = await hash(this.passwd, salt);
+    this.password = await hash(this.password, salt);
     next();
   } catch (e) {
     console.log(e);
@@ -78,7 +79,7 @@ schema.pre("insertMany", async function (next, users) {
   try {
     const salt = await genSalt(10);
     for (const u of users) {
-      u.passwd = await hash(u.passwd, salt);
+      u.password = await hash(u.password, salt);
     }
     next();
   } catch (e) {

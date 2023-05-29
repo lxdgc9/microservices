@@ -1,16 +1,14 @@
 import { RequestHandler } from "express";
-import { PermGr } from "../../../../model/perm-gr";
+import { Group } from "../../../../model/group";
 
-export const newManyGroup: RequestHandler = async (req, res, next) => {
-  const {
-    names,
-  }: {
-    names: string[];
-  } = req.body;
+export const newGroups: RequestHandler = async (req, res, next) => {
+  const { names }: { names: string[] } = req.body;
+
   try {
-    await PermGr.insertMany(names);
-    res.json({
-      group: await PermGr.find({}).populate({
+    await Group.insertMany(names.map((n) => ({ name: n })));
+
+    res.status(201).json({
+      groups: await Group.find().populate({
         path: "perms",
         select: "-group",
       }),

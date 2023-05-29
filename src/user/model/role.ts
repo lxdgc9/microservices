@@ -3,7 +3,7 @@ import { Schema, Types, model } from "mongoose";
 interface IRole {
   name: string;
   level: number;
-  perms: Types.ObjectId[];
+  permissions: Types.ObjectId[];
 }
 
 const schema = new Schema<IRole>(
@@ -16,10 +16,10 @@ const schema = new Schema<IRole>(
       type: Number,
       required: true,
     },
-    perms: [
+    permissions: [
       {
         type: Schema.Types.ObjectId,
-        ref: "perm",
+        ref: "permission",
       },
     ],
   },

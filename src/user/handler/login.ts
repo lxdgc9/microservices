@@ -37,7 +37,7 @@ export const login: RequestHandler = async (req, res, next) => {
       throw new UnauthorizedErr("user not found");
     }
 
-    const match = await compare(passwd, user.passwd);
+    const match = await compare(passwd, user.password);
     if (!match) {
       throw new UnauthorizedErr("wrong password");
     }
@@ -46,7 +46,7 @@ export const login: RequestHandler = async (req, res, next) => {
       {
         id: user._id,
         perms: user.role.perms.map((p) => p.code),
-        active: user.active,
+        active: user.isActive,
       },
       process.env.ACCESS_TOKEN_SECRET!,
       { expiresIn: 900 }

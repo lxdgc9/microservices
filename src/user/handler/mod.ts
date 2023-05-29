@@ -77,7 +77,7 @@ export const modUser: RequestHandler = async (req, res, next) => {
             v,
           })),
           role: roleId,
-          active,
+          isActive: active,
         },
       },
       { new: true }
