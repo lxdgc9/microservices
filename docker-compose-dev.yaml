@@ -2,8 +2,8 @@ version: "3"
 
 services:
   swagger:
-    build: ./docs
     image: sys/docs
+    build: ./docs
     ports:
       - 8080
     environment:
@@ -20,34 +20,43 @@ services:
       - 80:80
       - 443:443
     volumes:
-    - ./nginx:/etc/nginx
+      - ./nginx:/etc/nginx
     networks:
       - bridge
     depends_on:
       - swagger
-      - nats
       - user
+      - course
       - log
   nats:
     image: nats-streaming:alpine
-    command: [
-      "-p", 
-      "4222", 
-      "-m", 
-      "8222", 
-      "-hbi", 
-      "5s", 
-      "-hbt", 
-      "5s", 
-      "-hbf", 
-      "2", 
-      "-SD", 
-      "-cid", 
-      "nats_clus"
-    ]
+    command:
+      [
+        "-p",
+        "4222",
+        "-m",
+        "8222",
+        "-hbi",
+        "5s",
+        "-hbt",
+        "5s",
+        "-hbf",
+        "2",
+        "-SD",
+        "-cid",
+        "nats_clus",
+      ]
     ports:
       - 4222
       - 8222
+    networks:
+      - bridge
+  db:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/data/db:rw
     networks:
       - bridge
   redis:
@@ -58,7 +67,7 @@ services:
       - bridge
   user:
     image: sys/user
-    build: 
+    build:
       context: ./src/user
       args:
         - NODE_ENV=dev
@@ -69,8 +78,8 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=
-      - MONGO_URI=${MONGO_URI_USER_SRV}
+      - NODE_ENV=dev
+      - MONGO_URI=mongodb://db:27017/user
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=nats-cli_user
       - NATS_CLUSTER_ID=nats_clus
@@ -81,10 +90,11 @@ services:
       - bridge
     depends_on:
       - nats
+      - db
       - redis
   course:
     image: sys/course
-    build: 
+    build:
       context: ./src/course
       args:
         - NODE_ENV=dev
@@ -95,8 +105,8 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=dev
-      - MONGO_URI=${MONGO_URI_COURSE_SRV}
+      - NODE_ENV=
+      - MONGO_URI=mongodb://db:27017/course
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=nats-cli_course
       - NATS_CLUSTER_ID=nats_clus
@@ -106,9 +116,10 @@ services:
       - bridge
     depends_on:
       - nats
+      - db
   log:
     image: sys/log
-    build: 
+    build:
       context: ./src/log
       args:
         - NODE_ENV=dev
@@ -119,8 +130,8 @@ services:
     env_file:
       - .env
     environment:
-      - NODE_ENV=dev
-      - MONGO_URI=${MONGO_URI_LOG_SRV}
+      - NODE_ENV=
+      - MONGO_URI=mongodb://db:27017/log
       - NATS_URL=http://nats:4222
       - NATS_CLIENT_ID=nats-cli_log
       - NATS_CLUSTER_ID=nats_clus
@@ -130,6 +141,7 @@ services:
       - bridge
     depends_on:
       - nats
+      - db
 
 secrets:
   npmrc:

@@ -2,6 +2,7 @@
 node_modules/
 uploads/
 dist/
+db
 
 # Files
 .npmrc

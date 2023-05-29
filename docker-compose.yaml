@@ -2,7 +2,7 @@ version: "3"
 
 services:
   swagger:
-    image: sys/swagger
+    image: sys/docs
     build: ./docs
     ports:
       - 8080
@@ -21,26 +21,27 @@ services:
       - bridge
     depends_on:
       - swagger
-      - nats
       - user
+      - course
       - log
   nats:
     image: nats-streaming:alpine
-    command: [
-      "-p", 
-      "4222", 
-      "-m", 
-      "8222", 
-      "-hbi", 
-      "5s", 
-      "-hbt", 
-      "5s", 
-      "-hbf", 
-      "2", 
-      "-SD", 
-      "-cid", 
-      "nats_clus"
-    ]
+    command:
+      [
+        "-p",
+        "4222",
+        "-m",
+        "8222",
+        "-hbi",
+        "5s",
+        "-hbt",
+        "5s",
+        "-hbf",
+        "2",
+        "-SD",
+        "-cid",
+        "nats_clus",
+      ]
     ports:
       - 4222
       - 8222
@@ -54,7 +55,7 @@ services:
       - bridge
   user:
     image: sys/user
-    build: 
+    build:
       context: ./src/user
       args:
         - NODE_ENV=prod
@@ -78,7 +79,7 @@ services:
       - redis
   course:
     image: sys/course
-    build: 
+    build:
       context: ./src/course
       args:
         - NODE_ENV=prod
@@ -100,7 +101,7 @@ services:
       - nats
   log:
     image: sys/log
-    build: 
+    build:
       context: ./src/log
       args:
         - NODE_ENV=prod
